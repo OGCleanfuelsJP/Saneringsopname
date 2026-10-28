@@ -135,6 +135,21 @@ td.l{font-weight:600;cursor:pointer;color:var(--green-d)}
 .modbar input{flex:1;min-width:160px;border:1px solid #c9d3ca;border-radius:6px;padding:8px 10px;min-height:40px}
 .modtxt{padding:16px 16px 4px;font-size:14px}
 .modtxt h3{margin:0 0 6px;color:var(--green-d)}
+.pidc{background:#fff;border:1px solid #f6d3a6;border-left:4px solid var(--orange);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.pidc>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;gap:10px;align-items:center;font-weight:700}
+.pidc>summary::-webkit-details-marker{display:none}
+.pidc>summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--orange);border-bottom:2px solid var(--orange);transform:rotate(-45deg);transition:transform .15s;flex:none}
+.pidc[open]>summary::before{transform:rotate(45deg)}
+.pidb{padding:0 16px 14px;font-size:14px}
+.pidb p{margin:6px 0}
+.pidb ul{margin:4px 0 8px;padding-left:20px}
+.pidb .warn{background:var(--orange-t);border-radius:6px;padding:8px 10px;margin:8px 0}
+.aplist{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.ap{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:6px;padding:8px 10px;cursor:pointer}
+.ap input{width:20px;height:20px;flex:none;margin:1px 0 0;accent-color:var(--green)}
+.ap:has(input:checked){background:var(--green-t);border-color:#bfe3c9}
+.ap small{display:block;color:var(--mut);margin-top:2px}
+.pidtag{font-size:10px;font-weight:700;letter-spacing:.4px;color:#a65c00;background:var(--orange-t);border:1px solid #f6d3a6;border-radius:10px;padding:0 6px;margin-left:6px;vertical-align:1px}
 footer{max-width:1100px;margin:0 auto;padding:0 16px 30px;font-size:12px;color:var(--mut)}
 
 .ptitle{display:none}
@@ -164,6 +179,7 @@ footer{max-width:1100px;margin:0 auto;padding:0 16px 30px;font-size:12px;color:v
   .fld,.chk,.docrow{break-inside:avoid}
   .seg button.sel{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .hint{display:none}
+  .pidc{break-inside:auto}
   .phbtns,.ths:empty{display:none}
   .phrow{border:none;padding:0;background:none}
   .th{width:150px;height:112px;break-inside:avoid}
@@ -238,7 +254,7 @@ footer{max-width:1100px;margin:0 auto;padding:0 16px 30px;font-size:12px;color:v
 <footer>
   Gegevens en foto's worden automatisch opgeslagen in deze browser op dit apparaat. Foto's gaan alleen mee in <b>Foto's + data (ZIP)</b>. Maak na elke locatie een back-up via <b>Delen / mailen</b> of <b>Back-up (JSON)</b> — bij wissen van browsergegevens of een ander apparaat zijn ze anders weg.
   Werken PM en monteur op twee apparaten: exporteer bij de monteur een back-up en kies bij de PM <b>Importeren</b>; lege velden worden aangevuld, ingevulde velden blijven staan.
-  <span class="noprint"> · v5 · <button class="btn ghost" id="wipe" style="font-size:12px;padding:2px 8px">Alles wissen</button></span>
+  <span class="noprint"> · v6 · <button class="btn ghost" id="wipe" style="font-size:12px;padding:2px 8px">Alles wissen</button></span>
 </footer>
 
 <script>
@@ -444,11 +460,15 @@ try{
 const LOC = [
   ["Kortrijk","Brugsesteenweg 228, 8500 Kortrijk"],
   ["Jambes","Av. de Luxembourg 1, 5100 Namur"],
-  ["Herent/Winkelse","Brusselsesteenweg 23, 3020 Herent"],
+  ["Herent (Winksele)","Brusselsesteenweg 23, 3020 Herent"],
   ["Hasselt","Kempische Steenweg 465, 3500 Hasselt"],
   ["Maasmechelen","Rijksweg 526, 3630 Maasmechelen"]
 ];
 state.ph = state.ph || {};
+const PRE = [{"cmp.merk": "JAB", "cmp.trap": "4", "cmp.koel": "Lucht", "cmp.smer": "Oliegesmeerd", "cmp.pout": "300", "ops.soort": "Bundel / rack", "ops.aantal": "56", "ops.druk": "300", "ops.bank": "3 banken: 3BB02 High 8 + Medium 20, 3BB01 Low 28 (300 bar wp / 330 bar dp)", "drg.plaats": "Lagedruk", "dsp.aantal": "1", "dsp.merk": "Gilbarco", "int.gasdn": "DN50 HDPE", "doc.pid": "Aanwezig", "cmp.type": "V190/300 NG3 (V57110)", "cmp.pmin": "1.5", "cmp.pmax": "3", "int.gasp": "5", "drg.type": "0DR01", "dsp.type": "260 bar, 2 vullijnen", "dsp.slang": "2", "dsp.noz": "NGV1"}, {"cmp.merk": "JAB", "cmp.trap": "4", "cmp.koel": "Lucht", "cmp.smer": "Oliegesmeerd", "cmp.pout": "300", "ops.soort": "Bundel / rack", "ops.aantal": "56", "ops.druk": "300", "ops.bank": "3 banken: 3BB02 High 8 + Medium 20, 3BB01 Low 28 (300 bar wp / 330 bar dp)", "drg.plaats": "Lagedruk", "dsp.aantal": "1", "dsp.merk": "Gilbarco", "int.gasdn": "DN50 HDPE", "doc.pid": "Aanwezig", "cmp.type": "V190/300 NG3 (V57110)", "cmp.pmin": "1.5", "cmp.pmax": "3", "int.gasp": "4", "drg.type": "0DR01", "dsp.type": "260 bar, 2 vullijnen", "dsp.slang": "2", "dsp.noz": "NGV1"}, {"cmp.merk": "JAB", "cmp.trap": "4", "cmp.koel": "Lucht", "cmp.smer": "Oliegesmeerd", "cmp.pout": "300", "ops.soort": "Bundel / rack", "ops.aantal": "56", "ops.druk": "300", "ops.bank": "3 banken: 3BB02 High 8 + Medium 20, 3BB01 Low 28 (300 bar wp / 330 bar dp)", "drg.plaats": "Lagedruk", "dsp.aantal": "1", "dsp.merk": "Gilbarco", "int.gasdn": "DN50 HDPE", "doc.pid": "Aanwezig", "cmp.type": "SVB1300/300 NG1", "cmp.pmin": "0.3", "cmp.pmax": "0.9", "int.gasp": "2.3", "drg.type": "0DR01", "dsp.type": "260 bar, 2 vullijnen", "dsp.slang": "2", "dsp.noz": "NGV1"}, {"cmp.merk": "JAB", "cmp.trap": "4", "cmp.koel": "Lucht", "cmp.smer": "Oliegesmeerd", "cmp.pout": "300", "ops.soort": "Bundel / rack", "ops.aantal": "56", "ops.druk": "300", "ops.bank": "3 banken: 3BB02 High 8 + Medium 20, 3BB01 Low 28 (300 bar wp / 330 bar dp)", "drg.plaats": "Lagedruk", "dsp.aantal": "1", "dsp.merk": "Gilbarco", "int.gasdn": "DN50 HDPE", "doc.pid": "Aanwezig", "cmp.type": "V245-300NG16", "cmp.pmin": "8", "cmp.pmax": "16", "int.gasp": "16", "drg.type": "0DR001", "dsp.type": "260 bar, 2 vullijnen", "dsp.slang": "2", "dsp.noz": "NGV1"}, {"cmp.merk": "JAB", "cmp.trap": "4", "cmp.koel": "Lucht", "cmp.smer": "Oliegesmeerd", "cmp.pout": "300", "ops.soort": "Bundel / rack", "ops.aantal": "56", "ops.druk": "300", "ops.bank": "3 banken: 3BB02 High 8 + Medium 20, 3BB01 Low 28 (300 bar wp / 330 bar dp)", "drg.plaats": "Lagedruk", "dsp.aantal": "1", "dsp.merk": "Gilbarco", "int.gasdn": "DN50 HDPE", "doc.pid": "Aanwezig", "cmp.type": "V190/300 NG3 (V57110)", "cmp.pmax": "3", "int.gasp": "4.9", "drg.type": "0DR001", "dsp.type": "260 bar, 2 vulpunten"}];
+const PIDM = [{"tek": "517017-001 (D0.6) · rev. 01 · 01-05-2018 · As Built", "info": ["Gasaansluiting: GOS max. 5 bar → droger 0DR01 → PCV001 → buffertank BDT001 320 L (PRV002 5,5 bar) → compressor (inlaat PS max. 3 bar; PLC-stop <1,5 / >3 bar).", "Opslag 2 × 28 cilinders via prioriteitsblok 3PB1; leverdruk 3PCVF1/2 260 bar; Gilbarco 260 bar, 2 × NGV-1."], "let": ["Compressortype tegenstrijdig: tekening JAB V190/300 NG3, titelblok NG8 — typeplaat bepalend."], "hoog": [{"c": "Veiligheid", "t": "Setpoint van de overdrukventielen (PRV401 en 3PRV001, 330 bar) is gelijk aan de ontwerpdruk (330 bar dp) van de banken en aan PS 330 bar van de compressor-uitlaat. Er is dus geen marge tussen openen en dp; de werkdruk is 300 bar en PLC stop >300 bar op PT401.", "a": "Bevestig setpoint t.o.v. dp en toegestane accumulatie; documenteer afblaascapaciteit en certificaten."}, {"c": "Veiligheid", "t": "Buffertank BDT001 (320 L) heeft overdrukventiel PRV002 op 5.5 bar, terwijl compressor-inlaat PS max 3 bar is en PLC stop >3 bar op PTC0001. GOS max 5 bar. Bij falen van PCV001 kan de inlaatzijde boven 3 bar komen; ontwerpdruk van BDT001 en inlaat niet vermeld.", "a": "Verifieer ontwerpdruk BDT001 en inlaatleiding; controleer dat PRV002 de PS 3 bar niet overschrijdt."}, {"c": "Veiligheid", "t": "Leverdruk: 3PCVF1/3PCVF2 regelen op 260 bar, Ps staat op 278 bar (slechts 7% marge) terwijl opslag op 300-330 bar staat. Geen overdrukventiel zichtbaar in leveringslijnen/dispenser (alleen terugslagkleppen RV4.x). Actie van Ps bij 278 bar niet vermeld.", "a": "Bevestig dat Ps 278 bar SV1ESD/SV2ESD sluit en dat dispenser/slang voor 260 bar een overdrukbeveiliging heeft."}, {"c": "Compleetheid", "t": "Meerdere secties zijn leeg gelaten: grote kader in compressiezone (rij F-H, kolom 1-7), Pre-compressor, onderste kaders in Opslag (3 kaders onder 3PB1), tweede dispenserkader en lege lijnkaders. Alleen GOS-kader en twee/drie kranen zichtbaar in Gas-supply.", "a": "Bevestig dat deze kaders bewust leeg zijn; vul in of verwijder uit tekening."}, {"c": "Tekeningkwaliteit", "t": "Titelblok: tekeningdatum 01-09-2015, revisie 01 met datum 01-05-2018 'As Built', PDF-bestandsdatum 20180501. Eén revisie ingevuld, vijf lege revisieregels. Geen revisieomschrijving over wijzigingen. Tekening is ouder dan 8 jaar.", "a": "Bepaal actualiteit t.o.v. de installatie; laat as-built verifiëren door site-inspectie."}, {"c": "Tekeningkwaliteit", "t": "Compressortype inconsistent: titelblok 'Samenstel: JAB_V190_300_NG8 4480_1x(2xNGV1)', kader op tekening 'COMPRESSOR JAB V190/300 NG3 (V57110)'. NG8 vs NG3.", "a": "Verifieer type op typeplaat en corrigeer tekening."}], "cnt": {"Hoog": 6, "Midden": 11, "Laag": 3}}, {"tek": "517042 (D0.7) · rev. 02 · 16-09-2019 · Definitief (geen as-built)", "info": ["Gasaansluiting: GOS max. 4 bar → droger 0DR01 → BV001/SV001/PCV001 → BDT001 320 L (PRV002 5,5 bar) → compressor (inlaat PS max. 3 bar; PLC-stop <1,5 / >3 bar).", "Opslag 2 × 28 cilinders via 3PB1; Gilbarco 260 bar, 2 × NGV-1."], "let": ["Setpoint PCV001 staat niet op tekening — instelwaarde ter plaatse aflezen.", "Geen as-built revisie: opstelling ter plaatse vergelijken met P&ID."], "hoog": [{"c": "Veiligheid", "t": "Setpoints van alle overdrukkleppen aan de HP-zijde zijn 330 bar en vallen samen met de ontwerpdruk van de banken (330 bar dp) en de PS 330 bar van de uitlaat. Er is geen zichtbare marge voor opening/accumulatie. PLC-stop PT401 >300 bar ligt gelijk aan de werkdruk (300 bar wp).", "a": "Verifieer berekening PRV-setpoint, accumulatie en toegestane overdruk; leg stop- en alarmvolgorde vast (PLC 300, PRV 330)."}, {"c": "Veiligheid", "t": "Drukschakelaars Ps 'Setp. 278Bar' bij 3FCF1/3FCF2 liggen hoger dan de dispenserdruk (Gilbarco 260 bar). In de dispenser is geen overdrukklep getekend (alleen RV4.6/RV4.17 terugslagkleppen).", "a": "Controleer of 278 bar t.o.v. 260 bar dispenser toelaatbaar is en welke overdrukbeveiliging de dispenser beschermt."}, {"c": "Veiligheid", "t": "PRV002 staat op 5,5 bar terwijl de compressor-inlaat PS max 3 bar heeft en PLC stopt >3 bar; GOS Max.4bar is eveneens hoger dan 3 bar. Ontwerpdruk BDT001 en setpoint PCV001 ontbreken, dus onduidelijk wat de LP-zijde beschermt.", "a": "Vul ontwerpdruk BDT001 en PCV001-setpoint aan; bevestig dat compressor-inlaat PS max 3 bar niet overschreden kan worden."}, {"c": "Compleetheid", "t": "Er is geen Notes-kader op de tekening. Eisen zoals locked-open kleppen, TPRD-eisen, spoel-/ontluchtprocedures en leidingklasse staan nergens vermeld.", "a": "Voeg Notes toe met locked-open/locked-closed lijst, TPRD-eisen en leidingklassen."}, {"c": "Veiligheid", "t": "Handbediende afsluiters kunnen drukbronnen van beveiligingen scheiden (BV401 na PRV401; 3BV0HB/MB/LB tussen banken en rest van het systeem). Topologie van 3PRV001 t.o.v. de bankafsluiters is niet volledig te volgen; bij gesloten afsluiter kan een bank mogelijk alleen op per-cilinder TPRD/rupture disc steunen.", "a": "Leg vast welke afsluiters locked open zijn en toon expliciet de relief-route per bank."}], "cnt": {"Hoog": 5, "Midden": 16, "Laag": 4}}, {"tek": "517040 (D0.3) · rev. 02 (tabel: 00/01, 2019) · Definitief", "info": ["Lagedrukinlaat: GOS open pipe 2,3 bar → droger 0DR01 → PCV001 0,9 bar → compressor JAB SVB1300/300 NG1 (inlaat PS max. 0,9 bar; PLC-stop <0,3 / >0,9 bar).", "BDT001 320 L met PRV002 11 bar; opslag 2 × 28 cilinders; Gilbarco 260 bar, 2 × NGV-1."], "let": ["Afwijkend compressortype (SVB1300, NG1 lagedruk) t.o.v. de andere stations — beperkt inzetbaar waar netdruk hoger is.", "Bestand heet ‘Winksele’ (Herent, Brusselsesteenweg 23-27)."], "hoog": [{"c": "Veiligheid", "t": "Inlaatdruk-bescherming: PCV001 reduceert van GOS 2.3 bar naar 0.9 bar; INLET LP is PS max 0.9 bar en PTC0001 stopt pas bij >0.9 bar. Setpoints PCV001, PS max en PLC-stop zijn identiek (0.9 bar) en er is aan de LP-zijde geen overdrukventiel getekend. Bij falen van PCV001 kan 2.3 bar op de compressor-inlaat komen.", "a": "Controleren of een LP-PRV/stopvolgorde aanwezig is; onderscheid tussen stopwaarde en maximum aanbrengen; PRV of tweede regelaar toevoegen indien nodig"}, {"c": "Veiligheid", "t": "Overdrukventielen PRV401 en 3PRV001 staan op 330 bar; dit is gelijk aan het ontwerpdruk (330 bar dp) van de flesbundels en de PS 330 bar van de compressor-uitlaat. PLC-stop PT401 >300 bar ligt wel 30 bar eronder. Geen marge tussen PRV-setpoint en ontwerpdruk (druk kan boven dp stijgen tijdens afblazen).", "a": "Setpoints toetsen aan PED/EN-eisen (typisch set <= dp, stijging <10%); eventueel setpoint verlagen of dp verhogen"}, {"c": "Veiligheid", "t": "Dispenser Gilbarco is 260 bar, terwijl PRV's op 330 bar staan en de drukschakelaars in 3FCF1/3FCF2 op 278 bar. Er is binnen de dispenser (4DP1) geen overdrukventiel getekend; RV4.6/RV4.17 zijn terugslagkleppen (symbool) ondanks de tag RV. Overdrukbeveiliging van de dispenser is dus niet aantoonbaar.", "a": "Aantonen welk element de dispenser beschermt tegen >260 bar; setpoint 278 bar en ESD-actie verifiëren; tag RV hernoemen (CV) of PRV toevoegen"}, {"c": "Compleetheid", "t": "Meerdere grote kaders zijn leeg gelaten: onder de compressie-sectie (A2-H7), dryer-sectie CP2, onder het prioriteitsblok (twee kaders) en onder de dispenser (twee kaders, H13-H16 zone). Onduidelijk of dit gereserveerde/vervallen secties zijn (bv. tweede dryer, booster/PE-compressor, tweede dispenser).", "a": "Bevestigen met opsteller; lege kaders verwijderen of invullen; vermelden dat dit gereserveerd is"}, {"c": "Tekeningkwaliteit", "t": "Revisie-inconsistentie: titelblok toont Rev. 02, de revisietabel toont alleen 00 (07-05-19, Voor uitvoering) en 01 (03-06-19, Tag aangepast); tekeningdatum is 30-06-2016 en bestandsnaam bevat 20160630, terwijl revisies uit 2019 zijn. Pad in tekeningrand verwijst naar 'PID D0.2.DWG' terwijl het titelblok D0.3 vermeldt; PDF-metadata titel '5.01.04 zonder pecompressor' (aangemaakt 03-06-2019).", "a": "Revisietabel en titelblok synchroniseren; datum bijwerken; D0.2/D0.3 en rev 02 verifiëren; bestandsnaam hernoemen"}], "cnt": {"Hoog": 5, "Midden": 10, "Laag": 4}}, {"tek": "519013 (Hasselt-Kiewit) · rev. A · 28-02-2020 · Voor uitvoering", "info": ["Hogedrukinlaat: GOS max. 16 bar → droger 0DR001 → BDT001 320 L (PRV002 18 bar) → compressor JAB V245-300NG16 (inlaat PS max. 16 bar; PLC-stop <8 / >16 bar).", "Opslag 2 × 28 cilinders via 3PB1; vulstations 3FCF1/2 (Ps 278 bar); Gilbarco 260 bar, 2 × NGV-1."], "let": ["Afwijkend compressortype (NG16, inlaat 8–16 bar): alleen herbruikbaar op een locatie met hoge netdruk."], "hoog": [{"c": "Veiligheid", "t": "Setpoint vullijnbeveiliging (3PTF1/3PTF2 Ps 278 bar) ligt boven de ontwerpdruk van de dispenser (260 bar). Op tekening geen setpoint voor RV4.17 in de dispenser.", "a": "Bevestig ontwerpdruk dispenser en stem Ps-setpoint en RV4.17 af (setpoint noteren op tekening)."}, {"c": "Veiligheid", "t": "PRV401 en 3PRV001 hebben setpoint 330 bar = ontwerpdruk (dp) van banken en PS van compressoruitlaat; geen marge, PLC-stop op 300 bar.", "a": "Controleer of afblaasdruk ≤ dp en accumulatie/overdruk (10%) acceptabel is; leg gewenste marge vast."}, {"c": "Veiligheid", "t": "Bankdata: max temperatuur 65/70 °C 'varies per manufacturer', terwijl PLC-stop op TT401 en TS001 op 70 °C staat; 3TT001 setpoint 60 °C zonder actie.", "a": "Bevestig fabrikantlimiet (65 of 70 °C) en pas stopwaarden aan; noteer actie 3TT001."}, {"c": "Veiligheid", "t": "Ontlasting van PRV002 (18 bar), PRV401 (330 bar), 3PRV001, 3TPRD001 en SV002 komt samen op één ventleiding (25x2mm 3R60 / 25x4 RVS) met FLEX005/3FLEX001; afblaascapaciteit en tegendruk niet te beoordelen.", "a": "Laat afblaascapaciteit en tegendruk op de gemeenschappelijke vent berekenen; overweeg gescheiden LP/HP-vent."}, {"c": "Veiligheid", "t": "Per cilinder wordt een TPRD + breekplaat getoond (detail) maar zonder tags; ventroute van deze TPRD's niet getekend. Eigen TPRD op tank (TPRD001) en droger (0TPRD001) ventileert lokaal ('Local vent').", "a": "Tag TPRD's/rupture discs en toon ventroute; bevestig locatie lokale vents."}], "cnt": {"Hoog": 5, "Midden": 13, "Laag": 4}}, {"tek": "518050 · rev. E · 10-09-2020 · status leeg (rev. 01 Voor uitvoering)", "info": ["Gasaansluiting: GOS max. 4,9 bar → droger 0DR001 → BV001/SV001/PCV001 → BDT001 320 L (PRV002 5,5 bar) → compressor JAB V190/300 NG3 (inlaat PS max. 3 bar).", "Extra: recuperatie-unit 3RU met vat T001 (rev. A–E, HAZOP-wijzigingen); opslag 2 × 28 cilinders; Gilbarco 260 bar."], "let": ["Nozzles onduidelijk: titelblok 2 × NGV-1 / 2 × NGV-2 met 2 massameters, tekening toont 2 × NGV-1 — ter plaatse vaststellen.", "PTC0001 is in rev. B omgezet naar SIL — SIL-documentatie opvragen.", "Recuperatie-unit 3RU apart beoordelen (meenemen of niet)."], "hoog": [{"c": "Veiligheid", "t": "Setpoint PRV002 (5.5 bar) gelijk aan SIL-trip PTC0001 (5.5 bar, label) en PT001/Ps recuperatie (5.5 bar). Geen marge tussen trip en ontlasting; vergeleken met PS max 3 bar en GOS 4.9 bar.", "a": "Controleer ontwerpdruk BDT001, SIL-berekening en trip-volgorde (trip < PRV)."}, {"c": "Veiligheid", "t": "Revisie B: '2CP1-PTCO changed to SIL' - SIL-functie niet gespecificeerd (SIL-niveau, actie). Tagspelling PTC0001/PTCO onduidelijk.", "a": "SIL-classificatie en tagnaam bevestigen; SIL-claim op tekening opnemen."}, {"c": "Veiligheid", "t": "Note 1: kleppen locked open naar 3PRV001; kleppen 3BV0HB/MB/LB zijn handkleppen. Risico op afgesloten ontlastpad.", "a": "LO-borging (slot/tag) en periodieke controle in procedure."}, {"c": "Veiligheid", "t": "Note 2: TPRD moet bij brand blootgesteld zijn. TPRD's: TPRD001, 0TPRD001, 3TPRD001, TPRD001 (3RU) en per cilinder (detail). Aanspreektemperatuur niet vermeld; 3TPRD001 inline (blootstelling onzeker).", "a": "Specificatie aanspreektemperatuur en montage-eisen toevoegen."}, {"c": "Veiligheid", "t": "PRV 3PRV001 en PRV401 op 330 bar = ontwerpdruk opslag (330 dp) en uitlaat HP PS 330 bar; compressor PLC stop >300 bar = werkdruk. Weinig marge tussen setpoints.", "a": "Marges tussen werkdruk, PLC-stop, PS en PRV analyseren (accumulatie)."}, {"c": "Veiligheid", "t": "Ps 3FCF1/3FCF2 setp. 278 bar is hoger dan dispenser 260 bar (Gilbarco). Geen PRV in dispenser getekend.", "a": "Controleer drukklasse dispenser en overdrukbeveiliging na 3FCF."}, {"c": "Compleetheid", "t": "Grote lege kaders: onbenoemd gebied onder compressorsectie, Pre-compressor, lagere opslagkaders en dispenser-onderkader. Mogelijk onvolledige tekening.", "a": "Bevestig of secties vervallen zijn of nog ingevuld moeten worden."}, {"c": "Veiligheid", "t": "Revisie E: dubbele magneetkleppen geïnstalleerd (3RU SV002/SV003); 3FCF SV001+SV002; prioriteitsblok SV's. Faalmodus (FO/FC) niet overal aangegeven; 'FO' alleen bij SV001 (3RU).", "a": "Faalstand (FC/FO) van alle magneetkleppen vastleggen; controleer HAZOP."}, {"c": "Veiligheid", "t": "Revisie C: recuperatie-unit gewijzigd door HAZOP; revisie D: locatie SV002 gewijzigd. Recuperatie-unit bevat vat T001, TPRD en handmatige ontluchting zonder ontwerpgegevens.", "a": "HAZOP-acties koppelen aan tekening; ontwerpdruk T001 noteren."}, {"c": "Veiligheid", "t": "Revisie B: 'vent dispenser removed', maar HV4.5 en HV4.11 met afblaasbocht staan nog op de tekening.", "a": "Controleer of vents nog bestaan en waarheen ze ontlasten."}], "cnt": {"Hoog": 10, "Midden": 11, "Laag": 3}}];
+state.seed = state.seed || {};
+function seedPid(i){ Object.entries(PRE[i]||{}).forEach(([k,v])=>{ const c=state.inst[i][k]; if(c===undefined||c===null||c==="") state.inst[i][k]=v; }); }
 function seedLoc(){
   LOC.forEach(([n,a],i)=>{
     if(!state.inst[i]["alg.locatie"]) state.inst[i]["alg.locatie"]=n;
@@ -456,6 +476,8 @@ function seedLoc(){
   });
 }
 seedLoc();
+if(state.inst[2]["alg.locatie"]==="Herent/Winkelse") state.inst[2]["alg.locatie"]="Herent (Winksele)";
+if(!state.seed.pid){ for(let i=0;i<N;i++) seedPid(i); state.seed.pid=1; }
 
 let saveT = null;
 function flush(){ if(saveT){ clearTimeout(saveT); saveT=null; writeNow(); } }
@@ -670,22 +692,25 @@ async function buildZip(scope){
 }
 
 /* ---------- Render ---------- */
+function pidTag(i,key){ const pv=(PRE[i]||{})[key]; return '<span class="pidtag" data-pt="'+i+'|'+key+'"'+(pv!==undefined && String(state.inst[i][key])===pv ? '' : ' hidden')+' title="Overgenomen uit P&ID — ter plaatse controleren">P&amp;ID</span>'; }
+function syncPid(i,key){ const el=document.querySelector('[data-pt="'+i+'|'+key+'"]'); if(el){ const pv=(PRE[i]||{})[key]; el.hidden = !(pv!==undefined && String(state.inst[i][key])===pv); } }
 function fieldHTML(i,s,f){
   if(f.sub) return '<div class="sub">'+esc(f.sub)+'</div>';
   const key = s.id+"."+f.k, v = state.inst[i][key], id="i"+i+"_"+s.id+"_"+f.k;
+  const L = esc(f.l)+((PRE[i]||{})[key]!==undefined ? pidTag(i,key) : "");
   const da = 'data-i="'+i+'" data-key="'+key+'"';
   const w = f.w?" w":"";
   switch(f.t){
     case "text": case "date":
-      return '<label class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span><input type="'+f.t+'" id="'+id+'" '+da+' value="'+esc(v)+'" placeholder="'+esc(f.ph||"")+'"></label>';
+      return '<label class="fld'+w+'"><span class="lbl">'+L+'</span><input type="'+f.t+'" id="'+id+'" '+da+' value="'+esc(v)+'" placeholder="'+esc(f.ph||"")+'"></label>';
     case "num":{
       const inp = '<input type="number" step="any" inputmode="decimal" id="'+id+'" '+da+' value="'+esc(v)+'">';
-      return '<label class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span>'+(f.u?'<div class="unit">'+inp+'<span>'+esc(f.u)+'</span></div>':inp)+'</label>';
+      return '<label class="fld'+w+'"><span class="lbl">'+L+'</span>'+(f.u?'<div class="unit">'+inp+'<span>'+esc(f.u)+'</span></div>':inp)+'</label>';
     }
     case "area":
-      return '<label class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span><textarea id="'+id+'" '+da+'>'+esc(v)+'</textarea></label>';
+      return '<label class="fld'+w+'"><span class="lbl">'+L+'</span><textarea id="'+id+'" '+da+'>'+esc(v)+'</textarea></label>';
     case "seg":
-      return '<div class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span><div class="seg" '+da+'>'+
+      return '<div class="fld'+w+'"><span class="lbl">'+L+'</span><div class="seg" '+da+'>'+
         f.o.map(o=>'<button type="button" data-v="'+esc(o)+'" class="'+(v===o?"sel "+toneOf(f,o):"")+'">'+esc(o)+'</button>').join("")+'</div></div>';
     case "chk": case "ko":
       return '<label class="chk'+(f.t==="ko"?" ko":"")+w+'"><input type="checkbox" id="'+id+'" '+da+(v?" checked":"")+'><span>'+esc(f.l)+'</span></label>';
@@ -694,7 +719,7 @@ function fieldHTML(i,s,f){
         '<div class="phbtns"><label class="btn pri phadd">'+CAM+'Foto maken<input type="file" accept="image/*" capture="environment" data-phin="'+i+'|'+key+'"></label>'+
         '<label class="btn phadd">Uit galerij<input type="file" accept="image/*" multiple data-phin="'+i+'|'+key+'"></label></div></div></div>';
     case "doc":
-      return '<div class="docrow"><span class="lbl">'+esc(f.l)+'</span><div class="seg" '+da+'>'+
+      return '<div class="docrow"><span class="lbl">'+L+'</span><div class="seg" '+da+'>'+
         DOC.map(o=>'<button type="button" data-v="'+esc(o)+'" class="'+(v===o?"sel "+(T_DOC[o]||""):"")+'">'+esc(o)+'</button>').join("")+'</div></div>';
   }
   return "";
@@ -707,11 +732,23 @@ function secHTML(i,s){
     '<div class="body">'+(s.hint?'<div class="hint">'+esc(s.hint)+'</div>':"")+s.f.map(f=>fieldHTML(i,s,f)).join("")+'</div></details>';
 }
 
+function pidCard(i){
+  const m = PIDM[i]; if(!m) return "";
+  const done = m.hoog.filter((_,j)=>state.inst[i]["pid.ap"+(j+1)]).length;
+  return '<details class="pidc"><summary><span>Vooraf bekend uit P&amp;ID</span><span class="role mon" data-apc="'+i+'">'+done+'/'+m.hoog.length+' hoog gecontroleerd</span></summary><div class="pidb">'+
+    '<p><b>Tekening:</b> '+esc(m.tek)+'</p><ul>'+m.info.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+    (m.let.length?'<div class="warn"><b>Let op ter plaatse</b><ul>'+m.let.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>':'')+
+    '<p class="note">Velden met het label <span class="pidtag">P&amp;ID</span> zijn vooraf ingevuld uit de tekening (visueel afgelezen, niet geverifieerd). Wijzig je de waarde, dan verdwijnt het label.</p>'+
+    '<p><b>Aandachtspunten Hoog ('+m.hoog.length+')</b> <span class="note">· daarnaast '+m.cnt.Midden+' midden en '+m.cnt.Laag+' laag in de P&amp;ID-analyse</span></p><div class="aplist">'+
+    m.hoog.map((a,j)=>'<label class="ap"><input type="checkbox" data-i="'+i+'" data-key="pid.ap'+(j+1)+'"'+(state.inst[i]["pid.ap"+(j+1)]?" checked":"")+'><span><b>'+esc(a.c)+':</b> '+esc(a.t)+'<small>Actie: '+esc(a.a)+'</small></span></label>').join("")+
+    '</div></div></details>';
+}
+function updApc(i){ const el=document.querySelector('[data-apc="'+i+'"]'); const m=PIDM[i]; if(el&&m){ el.textContent = m.hoog.filter((_,j)=>state.inst[i]["pid.ap"+(j+1)]).length+"/"+m.hoog.length+" hoog gecontroleerd"; } }
 function render(){
   const main = document.getElementById("main");
   let h = '<section class="panel" id="p_ov"></section>';
   for(let i=0;i<N;i++){
-    h += '<section class="panel" id="p_'+i+'"><h2 class="ptitle" data-pt="'+i+'"></h2>'+S.map(s=>secHTML(i,s)).join("")+
+    h += '<section class="panel" id="p_'+i+'"><h2 class="ptitle" data-ptl="'+i+'"></h2>'+pidCard(i)+S.map(s=>secHTML(i,s)).join("")+
       '<div class="pfoot"><button class="btn ghost" data-clear="'+i+'">Deze installatie wissen</button></div></section>';
   }
   main.innerHTML = h;
@@ -723,7 +760,7 @@ function renderTabs(){
   for(let i=0;i<N;i++) h += '<button class="tab" data-tab="'+i+'">'+(i+1)+'. '+esc(state.inst[i]["alg.locatie"]||"Installatie")+'<span class="pct">'+instProg(i)+'%</span></button>';
   document.getElementById("tabs").innerHTML = h;
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===String(state.ui.tab)));
-  document.querySelectorAll("[data-pt]").forEach(e=>{ e.textContent = (+e.dataset.pt+1)+". "+instName(+e.dataset.pt); });
+  document.querySelectorAll("[data-ptl]").forEach(e=>{ e.textContent = (+e.dataset.ptl+1)+". "+instName(+e.dataset.ptl); });
 }
 
 function renderOverview(){
@@ -787,7 +824,7 @@ document.addEventListener("input", e=>{
   const i = +t.dataset.i;
   const v = t.type==="checkbox" ? t.checked : t.value;
   if(filled(v)) state.inst[i][t.dataset.key]=v; else delete state.inst[i][t.dataset.key];
-  save(); updateLive(i);
+  syncPid(i,t.dataset.key); if(t.dataset.key.startsWith("pid.")) updApc(i); save(); updateLive(i);
 });
 document.addEventListener("click", e=>{
   const b = e.target.closest("button"); if(!b) return;
@@ -802,23 +839,23 @@ document.addEventListener("click", e=>{
       const on = state.inst[i][key]===x.dataset.v;
       x.className = on ? "sel "+(f.t==="doc"?(T_DOC[x.dataset.v]||""):toneOf(f,x.dataset.v)) : "";
     });
-    save(); updateLive(i); return;
+    syncPid(i,key); save(); updateLive(i); return;
   }
   if(b.dataset.tab!==undefined){ showTab(b.dataset.tab==="ov"?"ov":+b.dataset.tab); save(); return; }
   if(b.classList.contains("role-f")){ state.ui.role=b.dataset.r; applyRole(); save(); return; }
   if(b.dataset.clear!==undefined){
     const i=+b.dataset.clear;
-    if(confirm("Alle gegevens en foto's van "+instName(i)+" wissen?")){ state.inst[i]={}; delPhotos(id=>state.ph[id].i===i); seedLoc(); save(); render(); }
+    if(confirm("Alle gegevens en foto's van "+instName(i)+" wissen?")){ state.inst[i]={}; delPhotos(id=>state.ph[id].i===i); seedLoc(); seedPid(i); save(); render(); }
     return;
   }
 });
 document.addEventListener("click", e=>{
   const td = e.target.closest("[data-go]"); if(td){ showTab(+td.dataset.go); save(); }
 });
-document.getElementById("openall").onclick = ()=>document.querySelectorAll(".panel.on details.sec").forEach(d=>d.open=true);
-document.getElementById("closeall").onclick = ()=>document.querySelectorAll(".panel.on details.sec").forEach(d=>d.open=false);
+document.getElementById("openall").onclick = ()=>document.querySelectorAll(".panel.on details.sec,.panel.on details.pidc").forEach(d=>d.open=true);
+document.getElementById("closeall").onclick = ()=>document.querySelectorAll(".panel.on details.sec,.panel.on details.pidc").forEach(d=>d.open=false);
 document.getElementById("wipe").onclick = ()=>{
-  if(confirm("ALLE gegevens én foto's van alle 5 installaties wissen? Maak eerst een ZIP-export.")){ state.inst=Array.from({length:N},()=>({})); delPhotos(()=>true); seedLoc(); save(); render(); }
+  if(confirm("ALLE gegevens én foto's van alle 5 installaties wissen? Maak eerst een ZIP-export.")){ state.inst=Array.from({length:N},()=>({})); delPhotos(()=>true); seedLoc(); for(let i=0;i<N;i++) seedPid(i); save(); render(); }
 };
 
 /* ---------- Export / import ---------- */
@@ -840,6 +877,9 @@ function csvText(){
       lines.push([i+1, instName(i), s.t, s.rl||s.role, f.l, v].map(q).join(";"));
     }));
   }
+  for(let i=0;i<N;i++) (PIDM[i]||{hoog:[]}).hoog.forEach((a,j)=>{
+    lines.push([i+1, instName(i), "P&ID-aandachtspunt (hoog)", "PM", a.c+": "+a.t, state.inst[i]["pid.ap"+(j+1)]?"Gecontroleerd":""].map(q).join(";"));
+  });
   return "\ufeff"+lines.join("\r\n");
 }
 document.getElementById("expjson").onclick = ()=>download("CNG-BE-opname-"+stamp()+".json", jsonText(), "application/json");
@@ -937,13 +977,13 @@ let openState = [];
 document.getElementById("print").onclick = ()=>{
   const all = confirm("Alle installaties afdrukken?\n\nOK = alle installaties + overzicht\nAnnuleren = alleen huidig tabblad");
   document.body.classList.toggle("printall", all);
-  openState = [...document.querySelectorAll("details.sec")].map(d=>d.open);
-  document.querySelectorAll("details.sec").forEach(d=>d.open=true);
+  openState = [...document.querySelectorAll("details.sec,details.pidc")].map(d=>d.open);
+  document.querySelectorAll("details.sec,details.pidc").forEach(d=>d.open=true);
   window.print();
 };
 window.addEventListener("afterprint", ()=>{
   document.body.classList.remove("printall");
-  document.querySelectorAll("details.sec").forEach((d,j)=>d.open=!!openState[j]);
+  document.querySelectorAll("details.sec,details.pidc").forEach((d,j)=>d.open=!!openState[j]);
 });
 
 render();
