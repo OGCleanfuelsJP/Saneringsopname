@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opname CNG België</title>
+<meta name="theme-color" content="#13A538">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CNG Opname">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#13A538; --green-d:#0e8a2e; --green-t:#e8f6ec;
+  --orange:#F18700; --orange-t:#fdf1e2;
+  --bad:#B3261E; --bad-t:#fbe9e8;
+  --ink:#1A1A1A; --mut:#5b655d; --line:#dbe3dc; --bg:#f4f6f4; --card:#fff;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Open Sans","Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+
+/* Header */
+header{background:var(--green);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 20px 14px;display:flex;align-items:center;gap:16px}
+header .logo svg{height:52px;width:auto;display:block}
+header h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.2px}
+header .hsub{font-size:13px;opacity:.92}
+header .save{margin-left:auto;font-size:12px;text-align:right;opacity:.95;white-space:nowrap}
+
+/* Toolbar */
+.bar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.tabs{display:flex;gap:4px;padding:8px 16px 0;overflow-x:auto}
+.tab{border:1px solid var(--line);border-bottom:none;background:var(--bg);padding:8px 14px;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap;font-weight:600;font-size:14px}
+.tab .pct{font-weight:400;font-size:12px;color:var(--mut);margin-left:6px}
+.tab.on{background:var(--green);color:#fff;border-color:var(--green)}
+.tab.on .pct{color:#fff;opacity:.85}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 16px;border-top:3px solid var(--green)}
+.tools .grp{display:flex;gap:4px;align-items:center}
+.tools .lab{font-size:12px;color:var(--mut);margin-right:2px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 11px;cursor:pointer;font-size:13px;font-weight:600}
+.btn:hover{border-color:var(--green)}
+.btn.pri{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn.on{background:var(--green);border-color:var(--green);color:#fff}
+.btn.ghost{background:none}
+.spacer{flex:1}
+
+main{max-width:1100px;margin:0 auto;padding:18px 16px 60px}
+.panel{display:none}
+.panel.on{display:block}
+
+/* Sections */
+details.sec{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
+details.sec>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--green);border-bottom:2px solid var(--green);transform:rotate(-45deg);transition:transform .15s;flex:none}
+details.sec[open]>summary::before{transform:rotate(45deg)}
+details.sec[open]>summary{border-bottom:1px solid var(--line);background:var(--green-t)}
+.role{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:20px;background:var(--green-t);color:var(--green-d);border:1px solid #bfe3c9}
+.role.mon{background:var(--orange-t);color:#a65c00;border-color:#f6d3a6}
+.role.bei{background:#eef0ee;color:var(--mut);border-color:var(--line)}
+.secp{margin-left:auto;font-size:12px;font-weight:600;color:var(--mut)}
+.secp.full{color:var(--green-d)}
+.body{padding:14px 16px 16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}
+.hint{grid-column:1/-1;font-size:13px;color:var(--mut);background:var(--bg);border-left:3px solid var(--orange);padding:8px 10px;border-radius:0 6px 6px 0}
+.sub{grid-column:1/-1;font-weight:700;color:var(--green-d);font-size:14px;margin-top:4px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld.w{grid-column:1/-1}
+.lbl{font-size:13px;font-weight:600;color:#333}
+.fld input[type=text],.fld input[type=number],.fld input[type=date],.fld select,.fld textarea{width:100%;border:1px solid #c9d3ca;border-radius:6px;padding:8px 10px;background:#fff;min-height:40px}
+.fld textarea{min-height:64px;resize:vertical}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid var(--green);outline-offset:0;border-color:var(--green)}
+.unit{display:flex;align-items:stretch}
+.unit input{border-radius:6px 0 0 6px!important}
+.unit span{border:1px solid #c9d3ca;border-left:none;border-radius:0 6px 6px 0;padding:8px 10px;background:var(--bg);font-size:13px;color:var(--mut);display:flex;align-items:center;white-space:nowrap}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{border:1px solid #c9d3ca;background:#fff;border-radius:6px;padding:7px 11px;cursor:pointer;font-size:13px;min-height:38px}
+.seg button:hover{border-color:var(--green)}
+.seg button.sel{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
+.seg button.sel.w{background:var(--orange);border-color:var(--orange)}
+.seg button.sel.b{background:var(--bad);border-color:var(--bad)}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:#fff}
+.chk input{width:20px;height:20px;accent-color:var(--green);flex:none;margin:1px 0 0}
+.chk.ko input{accent-color:var(--bad)}
+.chk:has(input:checked){background:var(--green-t);border-color:#bfe3c9}
+.chk.ko:has(input:checked){background:var(--bad-t);border-color:#efc2bf}
+.docrow{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.docrow:last-of-type{border-bottom:none}
+.docrow .lbl{font-weight:400;font-size:14px}
+
+.pfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+
+/* Overview */
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.card h2{margin:0 0 10px;font-size:18px;color:var(--green-d)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{background:var(--green);color:#fff;font-weight:600;white-space:nowrap}
+td.l{font-weight:600;cursor:pointer;color:var(--green-d)}
+.chip{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600;background:#eef0ee;color:var(--mut);white-space:nowrap}
+.chip.g{background:var(--green-t);color:var(--green-d)}
+.chip.w{background:var(--orange-t);color:#a65c00}
+.chip.b{background:var(--bad-t);color:var(--bad)}
+.prog{height:8px;background:#e6ebe6;border-radius:6px;overflow:hidden;min-width:70px}
+.prog i{display:block;height:100%;background:var(--green)}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;font-size:13px}
+.legend div{border:1px solid var(--line);border-radius:8px;padding:10px}
+.legend b{color:var(--green-d)}
+.counts{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.counts div{flex:1;min-width:120px;border-radius:8px;padding:10px;background:var(--bg);text-align:center}
+.counts strong{display:block;font-size:24px;color:var(--green-d)}
+.note{font-size:12px;color:var(--mut)}
+.phrow{display:flex;flex-direction:column;gap:8px;border:1px dashed #c9d3ca;border-radius:8px;padding:8px;background:#fafcfa}
+.ths{display:flex;flex-wrap:wrap;gap:6px}
+.ths:empty::before{content:"Nog geen foto's";font-size:13px;color:var(--mut)}
+.th{border:1px solid var(--line);padding:0;border-radius:6px;overflow:hidden;width:76px;height:76px;background:#eee;cursor:pointer}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.phbtns{display:flex;gap:6px;flex-wrap:wrap}
+.phadd{position:relative;display:inline-flex;align-items:center;gap:6px;min-height:40px}
+.phadd svg{width:18px;height:18px}
+.phadd input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.phadd.busy{opacity:.6;pointer-events:none}
+.mod{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:12px}
+.mod[hidden]{display:none}
+.modin{background:#fff;border-radius:10px;max-width:960px;width:100%;max-height:100%;display:flex;flex-direction:column;overflow:hidden}
+.modin img{max-width:100%;max-height:70vh;object-fit:contain;background:#111;display:block;margin:0 auto}
+.modbar{display:flex;gap:8px;flex-wrap:wrap;padding:10px;align-items:center}
+.modbar input{flex:1;min-width:160px;border:1px solid #c9d3ca;border-radius:6px;padding:8px 10px;min-height:40px}
+.modtxt{padding:16px 16px 4px;font-size:14px}
+.modtxt h3{margin:0 0 6px;color:var(--green-d)}
+footer{max-width:1100px;margin:0 auto;padding:0 16px 30px;font-size:12px;color:var(--mut)}
+
+.ptitle{display:none}
+
+@media (max-width:700px){
+  .body{grid-template-columns:1fr}
+  header{padding:12px 16px}
+  header h1{font-size:18px}
+  header .save{display:none}
+  .docrow{grid-template-columns:1fr}
+  .bar{position:static}
+}
+
+@media print{
+  body{background:#fff;font-size:11px}
+  .bar,.pfoot,footer .noprint{display:none!important}
+  header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  main{padding:8px 0;max-width:none}
+  body.printall .panel{display:block!important;break-before:page}
+  body.printall .panel:first-child{break-before:auto}
+  .ptitle{display:block;font-size:18px;color:var(--green-d);margin:0 0 8px;font-weight:700}
+  details.sec{border-color:#ccc}
+  details.sec>summary{background:var(--green-t)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:6px 10px}
+  .body{padding:8px 10px;gap:6px 14px}
+  .seg button{padding:2px 6px;min-height:0}
+  .seg button:not(.sel){color:#777;border-color:#ccc}
+  .fld,.chk,.docrow{break-inside:avoid}
+  .seg button.sel{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .hint{display:none}
+  .phbtns,.ths:empty{display:none}
+  .phrow{border:none;padding:0;background:none}
+  .th{width:150px;height:112px;break-inside:avoid}
+  th,.chip,.prog i{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" aria-label="OG Clean Fuels"><svg width="63" height="90" viewBox="0 0 63 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2004_156)">
+<path d="M14.8186 72.2512C10.3814 72.2512 8.1209 70.1581 8.1209 66.1395C8.1209 62.1209 10.3814 60.0279 14.8186 60.0279C19.2558 60.0279 21.5163 62.1209 21.5163 66.1395C21.5163 70.1581 19.2558 72.2512 14.8186 72.2512ZM23.2744 73.6744C23.2744 72.1674 24.0279 70.6604 25.2 69.5721C23.4418 68.0651 22.4372 65.8046 22.4372 63.1256C22.4372 60.7814 23.2744 58.3535 25.0325 56.5116C22.6046 54.586 19.1721 53.6651 14.7349 53.6651C5.35811 53.6651 0.418579 57.9349 0.418579 66.0558C0.418579 74.1767 5.35811 78.5302 14.8186 78.5302C18.6697 78.5302 21.7674 77.7767 24.1116 76.3535C23.5256 75.6 23.2744 74.6791 23.2744 73.6744Z" fill="white"/>
+<path d="M34.9954 66.6419C31.9814 66.6419 30.1396 65.1349 30.1396 62.707C30.1396 60.2791 32.0652 58.6884 34.9954 58.6884C37.9256 58.6884 39.6838 60.1954 39.6838 62.7907C39.6838 65.1349 37.8419 66.6419 34.9954 66.6419ZM48.4745 54.3349H39.6838C38.2605 54.0837 36.921 53.8326 35.1628 53.8326C27.0419 53.8326 23.4419 58.521 23.4419 63.1256C23.4419 66.0558 24.6977 68.4 26.9582 69.6558C25.3675 70.4093 24.1954 72 24.1954 73.6744C24.1954 75.3489 25.1163 76.6047 26.7907 77.4419C28.9675 78.5303 33.4884 78.614 35.9163 78.614H37.3396C39.8512 78.614 41.1907 79.5349 41.1907 81.293C41.1907 83.5535 38.7628 84.9768 34.8279 84.9768C29.3024 84.9768 25.2 83.7209 25.2 83.7209L23.8605 88.3256C23.8605 88.3256 27.1256 90 33.907 90C42.1117 90 48.1396 86.0651 48.1396 80.5396C48.1396 76.0186 44.9582 73.507 39.1814 73.507H35.2465C32.0652 73.507 31.4791 73.0884 31.4791 72.2512C31.4791 71.8326 31.7303 71.3303 32.5675 70.9954C33.321 71.1628 34.4931 71.1628 35.0791 71.1628C42.1117 71.1628 46.2977 67.8977 46.2977 62.4558C46.2977 61.3675 45.9628 60.2791 45.2931 59.5256H48.4745V54.3349Z" fill="white"/>
+<path d="M61.5349 7.61861C61.5349 6.27908 61.1163 5.27443 60.2791 4.52094C59.4419 3.76745 58.2698 3.43257 56.8465 3.43257C55.3396 3.43257 54.2512 3.76745 53.414 4.52094C52.5768 5.19071 52.1582 6.19536 52.1582 7.53489C52.1582 8.3721 52.2419 9.20931 52.4931 9.9628H51.8233C51.5721 9.29303 51.4884 8.45582 51.4884 7.36745C51.4884 5.94419 51.9907 4.7721 52.9117 3.93489C53.8326 3.09768 55.1721 2.67908 56.8465 2.67908C57.9349 2.67908 58.8558 2.84652 59.6093 3.26512C60.4465 3.68373 61.0326 4.26977 61.4512 5.02326C61.8698 5.77675 62.121 6.61396 62.121 7.61861C62.121 8.62326 61.9535 9.54419 61.5349 10.2977L60.8651 10.0465C61.3675 9.29303 61.5349 8.45582 61.5349 7.61861Z" fill="white"/>
+<path d="M51.6559 12.2233H62.0373V12.9768H52.3257V17.9163H51.6559V12.2233Z" fill="white"/>
+<path d="M51.6559 25.3675V19.6744H62.0373V25.3675H61.3675V20.4279H57.4326V25.1163H56.7629V20.4279H52.3257V25.3675H51.6559Z" fill="white"/>
+<path d="M55.3396 32.6512V28.4651L51.6559 27.0419V26.2047L62.0373 30.3907V30.893L51.6559 34.9953V34.1581L55.3396 32.6512ZM56.0094 28.7163V32.4L59.7768 30.9767C60.1117 30.893 60.4466 30.7256 61.0326 30.5581C60.614 30.3907 60.1954 30.307 59.7768 30.1395L56.0094 28.7163Z" fill="white"/>
+<path d="M51.6559 43.9535V43.2L60.8652 37.0884V37.0047C59.7768 37.0884 58.9396 37.0884 58.3536 37.0884H51.6559V36.4186H62.0373V37.1721L52.828 43.2838V43.3675C53.6652 43.2838 54.5024 43.2838 55.2559 43.2838H62.0373V43.9535H51.6559Z" fill="white"/>
+<path d="M51.6559 51.4047V50.6512H62.0373V56.3442H61.3675V51.4047H56.9303V56.093H56.2605V51.4047H51.6559Z" fill="white"/>
+<path d="M62.0373 65.5535H55.3396C54.1675 65.5535 53.2466 65.2186 52.5768 64.5489C51.907 63.8791 51.5721 62.8745 51.5721 61.7024C51.5721 60.5303 51.907 59.5256 52.5768 58.8559C53.2466 58.1861 54.1675 57.8512 55.4233 57.8512H62.121V58.6047H55.4233C54.4187 58.6047 53.6652 58.8558 53.0791 59.4419C52.4931 60.0279 52.2419 60.7814 52.2419 61.7861C52.2419 62.7907 52.4931 63.5442 53.0791 64.0465C53.6652 64.5489 54.4187 64.8838 55.3396 64.8838H62.121V65.5535H62.0373Z" fill="white"/>
+<path d="M51.6559 74.0931V68.4H62.0373V74.0931H61.3675V69.1535H57.4326V73.8419H56.7629V69.1535H52.3257V74.0931H51.6559Z" fill="white"/>
+<path d="M51.6559 76.4372H62.0373V77.1907H52.3257V82.1302H51.6559V76.4372Z" fill="white"/>
+<path d="M54.3349 89.5814C53.4977 89.5814 52.7442 89.2465 52.2419 88.6605C51.7396 87.9907 51.4884 87.1535 51.4884 86.1489C51.4884 84.893 51.6558 83.8884 51.907 83.2186H52.6605C52.3256 83.9721 52.1582 84.893 52.1582 86.0651C52.1582 86.9024 52.3256 87.5721 52.7442 88.0744C53.1628 88.5768 53.6652 88.8279 54.2512 88.8279C54.6698 88.8279 55.0047 88.7442 55.2558 88.5768C55.507 88.4093 55.7582 88.1582 55.9256 87.7396C56.1768 87.4047 56.3442 86.8186 56.5954 86.0651C56.9303 84.9768 57.3489 84.307 57.7675 83.8884C58.1861 83.4698 58.7721 83.3023 59.4419 83.3023C60.1954 83.3023 60.8652 83.6372 61.3675 84.2233C61.8698 84.8093 62.121 85.6465 62.121 86.5675C62.121 87.5721 61.9535 88.493 61.5349 89.3303L60.9489 89.0791C61.2838 88.2419 61.4512 87.4047 61.4512 86.6512C61.4512 85.8977 61.2838 85.3117 60.9489 84.8093C60.614 84.3907 60.1117 84.1396 59.5256 84.1396C59.107 84.1396 58.8558 84.2233 58.6047 84.3907C58.3535 84.5582 58.1024 84.7256 57.9349 85.0605C57.7675 85.3954 57.5163 85.8977 57.2651 86.6512C57.014 87.4884 56.6791 88.0744 56.4279 88.493C56.1768 88.9116 55.8419 89.1628 55.507 89.414C55.2558 89.4977 54.8372 89.5814 54.3349 89.5814Z" fill="white"/>
+<path d="M22.4373 48.0558H38.2605L30.3907 37.1721L22.4373 48.0558Z" fill="white"/>
+<path d="M15.4047 44.707L24.1954 32.6512L10.0465 28.0465C8.03721 27.3767 6.94884 25.2 7.53488 23.1907C8.20465 21.1814 10.3814 20.093 12.3907 20.6791L26.5395 25.2837V10.4651C26.5395 8.37209 28.2977 6.61395 30.3907 6.61395C32.4837 6.61395 34.2419 8.37209 34.2419 10.4651V25.3674L48.0558 20.8465V9.37674C48.0558 4.18605 43.8698 0 38.6791 0H9.37675C4.18605 0 0 4.18605 0 9.37674V38.7628C0 43.9535 4.18605 48.1395 9.37675 48.1395H14.8186C14.4837 46.9674 14.6512 45.7116 15.4047 44.707Z" fill="white"/>
+<path d="M36.6698 32.6511L45.3768 44.7069C45.4605 44.8744 45.5442 44.9581 45.6279 45.1255C47.1349 43.4511 48.1396 41.2744 48.1396 38.7628V28.9674L36.6698 32.6511Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_2004_156">
+<rect width="62.1209" height="90" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+</div>
+  <div>
+    <h1>Opname CNG-installaties België</h1>
+    <div class="hsub">Technische opname t.b.v. herbestemming · OG Clean Fuels · Technisch Bedrijfsbureau</div>
+  </div>
+  <div class="save" id="save">Nog niets opgeslagen</div>
+</header>
+
+<div class="bar">
+  <div class="tabs" id="tabs"></div>
+  <div class="tools">
+    <div class="grp"><span class="lab">Rol</span>
+      <button class="btn role-f on" data-r="Alle">Alle</button>
+      <button class="btn role-f" data-r="PM">Projectmanager</button>
+      <button class="btn role-f" data-r="Monteur">Monteur</button>
+    </div>
+    <div class="grp">
+      <button class="btn ghost" id="openall">Alles open</button>
+      <button class="btn ghost" id="closeall">Alles dicht</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="grp">
+      <button class="btn pri" id="share" title="Back-up + Excel delen via mail, AirDrop, Bestanden">Delen / mailen</button>
+      <button class="btn" id="expjson" title="Back-up van alle gegevens">Back-up (JSON)</button>
+      <button class="btn" id="expzip" title="Foto's + data als ZIP (huidig station, of alle vanaf Overzicht)">Foto's + data (ZIP)</button>
+      <button class="btn" id="impjson" title="JSON of ZIP van ander apparaat samenvoegen">Importeren</button>
+      <button class="btn" id="expcsv">Excel (CSV)</button>
+      <button class="btn" id="print">Print / PDF</button>
+      <input type="file" id="file" accept=".json,.zip,application/json,application/zip" hidden>
+    </div>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<div class="mod" id="vw" hidden><div class="modin"><img id="vwimg" alt="Foto"><div class="modbar"><input type="text" id="vwcap" placeholder="Bijschrift (optioneel)"><button class="btn" id="vwdel">Verwijderen</button><button class="btn pri" id="vwclose">Sluiten</button></div></div></div>
+<div class="mod" id="dlm" hidden><div class="modin" style="max-width:460px"><div class="modtxt" id="dltxt"></div><div class="modbar"><button class="btn pri" id="dlshare">Delen / mailen</button><button class="btn" id="dlsave">Downloaden</button><button class="btn ghost" id="dlclose">Sluiten</button></div></div></div>
+
+<footer>
+  Gegevens en foto's worden automatisch opgeslagen in deze browser op dit apparaat. Foto's gaan alleen mee in <b>Foto's + data (ZIP)</b>. Maak na elke locatie een back-up via <b>Delen / mailen</b> of <b>Back-up (JSON)</b> — bij wissen van browsergegevens of een ander apparaat zijn ze anders weg.
+  Werken PM en monteur op twee apparaten: exporteer bij de monteur een back-up en kies bij de PM <b>Importeren</b>; lege velden worden aangevuld, ingevulde velden blijven staan.
+  <span class="noprint"> · v5 · <button class="btn ghost" id="wipe" style="font-size:12px;padding:2px 8px">Alles wissen</button></span>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const N = 5;
+const KEY = "og-cng-be-opname-v1";
+
+/* ---------- Schema ---------- */
+const F = (k,l,t,x) => Object.assign({k,l,t},x||{});
+const ST = ["Goed","Matig","Slecht","n.v.t."], T_ST = {Matig:"w",Slecht:"b"};
+const JNO = ["Ja","Nee","Onbekend"];
+const DOC = ["Aanwezig","Foto gemaakt","Opvragen","Ontbreekt","n.v.t."], T_DOC = {Opvragen:"w",Ontbreekt:"b"};
+const CORR = ["Geen","Licht","Matig","Ernstig"], T_CORR = {Licht:"w",Matig:"w",Ernstig:"b"};
+const COMP = ["Herbruikbaar","Na revisie","Onderdelen","Afvoeren","n.v.t."], T_COMP = {"Na revisie":"w",Onderdelen:"w",Afvoeren:"b"};
+const TOT = ["A – Compleet herplaatsbaar","B – Deels herbruikbaar","C – Onderdelenbron","D – Niet overnemen"];
+const T_TOT = {}; T_TOT[TOT[1]]="g"; T_TOT[TOT[2]]="w"; T_TOT[TOT[3]]="b";
+
+const S = [
+ {id:"alg", t:"Algemeen", role:"PM", f:[
+  F("locatie","Locatienaam","text"),
+  F("adres","Adres","text"),
+  F("datum","Datum opname","date"),
+  F("og","Aanwezig OG","text",{ph:"Projectmanager, monteur"}),
+  F("verk","Aanwezig verkoper","text",{ph:"Commissioning engineer, operations manager",w:1}),
+  F("status","Bedrijfsstatus","seg",{o:["In bedrijf","Buiten bedrijf","Deels"],tone:{"Buiten bedrijf":"w",Deels:"w"}}),
+  F("sinds","Buiten bedrijf sinds","text",{opt:1}),
+  F("druk","Installatie bij aankomst","seg",{o:["Onder druk","Drukloos","Onbekend"]}),
+  F("conserv","Geconserveerd tijdens stilstand","seg",{o:JNO,tone:{Nee:"w"}}),
+  F("conservhoe","Hoe geconserveerd","text",{opt:1,w:1,ph:"bijv. onder stikstof gezet, olie ververst, droger afgesloten, verwarming/ontvochtiging aan"}),
+  F("p_overz","Foto: overzicht locatie","foto")
+ ]},
+ {id:"cmp", t:"Compressor", role:"Monteur", f:[
+  F("merk","Merk","text"), F("type","Type","text"),
+  F("sn","Serienummer","text"), F("bj","Bouwjaar","num"),
+  F("cap","Capaciteit","num",{u:"Nm³/h"}), F("trap","Aantal trappen","num"),
+  F("pmin","Inlaatdruk min.","num",{u:"bar"}), F("pmax","Inlaatdruk max.","num",{u:"bar"}),
+  F("pout","Einddruk","num",{u:"bar"}), F("kw","Motorvermogen","num",{u:"kW"}),
+  F("uren","Draaiuren (teller)","num",{u:"h"}), F("rev","Laatste revisie (datum / bij uren)","text"),
+  F("koel","Koeling","seg",{o:["Lucht","Water","Anders"]}),
+  F("smer","Smering","seg",{o:["Oliegesmeerd","Olievrij","Onbekend"]}),
+  F("fc","Frequentieregeling","seg",{o:JNO}),
+  F("lek","Lekkage / olieverlies zichtbaar","seg",{o:["Nee","Twijfel","Ja"],tone:{Twijfel:"w",Ja:"b"}}),
+  F("corr","Corrosie","seg",{o:CORR,tone:T_CORR}),
+  F("staat","Algemene staat","seg",{o:ST,tone:T_ST}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_cmp","Foto: compressor + typeplaat","foto"),
+  F("p_uren","Foto: draaiurenteller","foto")
+ ]},
+ {id:"ops", t:"Opslag", role:"Monteur", hint:"Typeplaatjes en keurstempels van álle cilinders/bundels fotograferen. De herkeuringsdatum bepaalt de restlevensduur en daarmee vaak de knock-out.", f:[
+  F("soort","Uitvoering","seg",{o:["Losse cilinders","Bundel / rack","Buffervat","Combinatie"],w:1}),
+  F("aantal","Aantal cilinders/vaten","num"), F("vol","Totale waterinhoud","num",{u:"L"}),
+  F("druk","Werkdruk","num",{u:"bar"}), F("bank","Banken / prioriteitspaneel","text",{ph:"bijv. 3 banken, LP/MP/HP"}),
+  F("fab","Fabrikant","text"), F("fabj","Fabricagejaar","num"),
+  F("herk","Laatste herkeuring","text"), F("herkv","Volgende herkeuring","text"),
+  F("stempel","Typeplaatjes / keurstempels leesbaar","seg",{o:["Ja","Deels","Nee"],tone:{Deels:"w",Nee:"b"}}),
+  F("corr","Corrosie","seg",{o:CORR,tone:T_CORR}),
+  F("staat","Algemene staat","seg",{o:ST,tone:T_ST}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_ops","Foto: opslag + typeplaatjes + keurstempels","foto")
+ ]},
+ {id:"drg", t:"Droger", role:"Monteur", f:[
+  F("merk","Merk","text"), F("type","Type","text"),
+  F("plaats","Plaatsing","seg",{o:["Lagedruk","Hogedruk","Geen droger"]}),
+  F("regen","Regeneratie","seg",{o:["Automatisch","Handmatig","Wisselpatroon","Onbekend"]}),
+  F("staat","Algemene staat","seg",{o:ST,tone:T_ST}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_drg","Foto: droger + typeplaat","foto")
+ ]},
+ {id:"dsp", t:"Dispensers", role:"Monteur", f:[
+  F("aantal","Aantal dispensers","num"), F("merk","Merk","text"),
+  F("type","Type","text"), F("sn","Serienummer(s)","text"),
+  F("slang","Slangen per dispenser","num"),
+  F("noz","Vulnippel","seg",{o:["NGV1","NGV2","Beide"]}),
+  F("meter","Massameter merk/type","text"),
+  F("mid","Geijkt (MID)","seg",{o:JNO,tone:{Nee:"w"}}),
+  F("betaal","Betaalterminal","seg",{o:["Geïntegreerd","Los","Geen"]}),
+  F("staat","Algemene staat","seg",{o:ST,tone:T_ST}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_dsp","Foto: dispensers + typeplaat","foto")
+ ]},
+ {id:"ctl", t:"Besturing en elektra", role:"Monteur", f:[
+  F("plc","PLC merk/type","text"), F("sw","Softwareversie / back-up beschikbaar","text"),
+  F("remote","Afstandsbewaking","seg",{o:JNO}),
+  F("gasdet","Vaste gasdetectie","seg",{o:["Werkend","Niet getest","Niet aanwezig"],tone:{"Niet getest":"w","Niet aanwezig":"b"},w:1}),
+  F("nood","Noodstopcircuit getest","seg",{o:["Ja, OK","Ja, fout","Niet mogelijk"],tone:{"Ja, fout":"b","Niet mogelijk":"w"},w:1}),
+  F("atex","Staat ATEX-materieel","seg",{o:ST,tone:T_ST}),
+  F("kast","Staat schakelkast","seg",{o:ST,tone:T_ST}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_kast","Foto: schakelkast / PLC","foto"),
+  F("p_gasdet","Foto: gasdetectie","foto")
+ ]},
+ {id:"fnt", t:"Functietest", role:"Monteur", rl:"Monteur + verkoper", hint:"Alleen als de commissioning engineer de installatie veilig kan opstarten. Hij bedient, de monteur observeert en legt vast.", f:[
+  F("uitg","Functietest uitgevoerd","seg",{o:["Ja","Nee"],tone:{Nee:"w"}}),
+  F("reden","Reden indien niet uitgevoerd","text",{opt:1}),
+  F("start","Opstart zonder storing","seg",{o:["Ja","Nee"],tone:{Nee:"b"}}),
+  F("trill","Trillingen / geluid","seg",{o:["Normaal","Afwijkend"],tone:{Afwijkend:"b"}}),
+  F("pber","Bereikte einddruk","num",{u:"bar"}), F("tijd","Tijd tot einddruk","num",{u:"min"}),
+  F("lek","Lektest / resultaat","text",{w:1}),
+  F("alarm","Alarmen of storingen tijdens test","area",{w:1,opt:1}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_fnt","Foto: display / drukken tijdens test","foto",{opt:1})
+ ]},
+ {id:"beh", t:"Behuizing (betongebouw)", role:"PM", f:[
+  F("l","Lengte","num",{u:"m"}), F("b","Breedte","num",{u:"m"}),
+  F("h","Hoogte","num",{u:"m"}), F("gew","Gewicht","num",{u:"ton"}),
+  F("gewbr","Bron gewicht","seg",{o:["Typeplaat","Tekening","Opgave verkoper","Schatting"],tone:{Schatting:"w"},w:1}),
+  F("uitv","Uitvoering","seg",{o:["Monoliet","Prefab elementen","Anders"]}),
+  F("hijs","Hijsvoorzieningen","seg",{o:["Aanwezig, gekeurd","Aanwezig, ongekeurd","Niet aanwezig","Onbekend"],tone:{"Aanwezig, ongekeurd":"w","Niet aanwezig":"b"},w:1}),
+  F("fund","Fundering","seg",{o:["Los geplaatst","Verankerd","Ingestort","Onbekend"],tone:{Ingestort:"b"},w:1}),
+  F("apart","Installatie en behuizing apart te transporteren","seg",{o:JNO,w:1}),
+  F("beton","Staat beton","seg",{o:ST,tone:T_ST}),
+  F("ddv","Staat deuren / ventilatie / dak","seg",{o:ST,tone:T_ST}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_beh4","Foto: behuizing, 4 zijden","foto"),
+  F("p_int","Foto: interieur behuizing","foto"),
+  F("p_hijs","Foto: hijspunten","foto"),
+  F("p_fund","Foto: fundering / verankering","foto")
+ ]},
+ {id:"int", t:"Interfaces / demontagepunten", role:"PM", f:[
+  F("gasdn","Gasaansluiting diameter","text",{ph:"bijv. DN50"}), F("gasp","Gasdruk aansluiting","num",{u:"bar"}),
+  F("elek","Elektrische aansluiting","text",{ph:"A / kVA"}), F("aard","Aarding / potentiaalvereffening","text"),
+  F("lead","Ondergrondse leidingen naar dispensers","seg",{o:["Ja","Nee","Onbekend"]}),
+  F("leadl","Lengte / tracé","text",{opt:1}),
+  F("overig","Overige interfaces (data, water, riool)","area",{opt:1,w:1}),
+  F("p_aansl","Foto: gas- en elektra-aansluiting","foto")
+ ]},
+ {id:"ber", t:"Bereikbaarheid kraan en transport", role:"PM", f:[
+  F("kraan","Kraanopstelplaats","seg",{o:["Ruim","Beperkt","Niet aanwezig"],tone:{Beperkt:"w","Niet aanwezig":"b"},w:1}),
+  F("afst","Afstand kraan – zwaartepunt unit","num",{u:"m"}),
+  F("weg","Toegangsweg trailer","seg",{o:["Geschikt","Beperkt","Ongeschikt"],tone:{Beperkt:"w",Ongeschikt:"b"}}),
+  F("ondergr","Ondergrond","seg",{o:["Asfalt","Klinkers","Onverhard","Anders"],tone:{Onverhard:"w"},w:1}),
+  F("obst","Obstakels (bovenleidingen, overkapping, bomen, gebouwen)","area",{w:1}),
+  F("opm","Opmerkingen","area",{opt:1,w:1}),
+  F("p_ber","Foto: toegangsweg + kraanopstelplaats","foto")
+ ]},
+ {id:"doc", t:"Documentatie ter plaatse", role:"PM", doc:1, f:[
+  F("ce","CE-/conformiteitsverklaring installatie","doc"),
+  F("ped","Constructiedossier drukapparatuur (PED)","doc"),
+  F("kops","Keuringsrapporten opslag","doc"),
+  F("kcmp","Inspectie-/keuringsrapporten compressor","doc"),
+  F("atex","Explosieveiligheidsdocument / zoneringsplan","doc"),
+  F("pid","P&ID","doc"),
+  F("elsch","Elektrische schema's","doc"),
+  F("arei","AREI-keuringsverslag","doc"),
+  F("hand","Handleidingen (compressor, droger, dispensers)","doc"),
+  F("logb","Onderhoudshistorie / logboek","doc"),
+  F("rev","Revisierapporten compressor","doc"),
+  F("plcsw","PLC-software / back-up","doc"),
+  F("ijk","IJkcertificaten dispensers","doc"),
+  F("opm","Waar ligt de documentatie / afspraken over aanlevering","area",{opt:1,w:1}),
+  F("p_doc","Foto: documenten ter plaatse","foto",{opt:1})
+ ]},
+ {id:"itv", t:"Interview verkoper", role:"PM", f:[
+  {sub:"Commissioning engineer"},
+  F("ce1","Bekende gebreken of terugkerende storingen?","area",{w:1}),
+  F("ce2","Modificaties ten opzichte van de originele uitvoering?","area",{w:1}),
+  F("ce3","Laatste keer in bedrijf / laatste vulling?","area",{w:1}),
+  F("ce4","Instelwaarden en parameters beschikbaar (drukschakelaars, veiligheden)?","area",{w:1}),
+  F("ce5","Reserveonderdelen aanwezig (ter plaatse of in magazijn)?","area",{w:1}),
+  F("ce6","Aandachtspunten bij demontage (drukloos maken, inertiseren, losnemen)?","area",{w:1}),
+  {sub:"Operations manager"},
+  F("om1","Storingsfrequentie en beschikbaarheid laatste jaren?","area",{w:1}),
+  F("om2","Wie deed het onderhoud (partij, contract, interval)?","area",{w:1}),
+  F("om3","Grote reparaties of vervangingen in het verleden?","area",{w:1}),
+  F("om4","Waar ligt de documentatie en hoe wordt die overgedragen?","area",{w:1}),
+  F("om5","Contactpersoon voor vervolgvragen (naam, functie)","text",{w:1})
+ ]},
+ {id:"fot", t:"Overige foto's", role:"Beide", hint:"Foto's horen bij het blok waar ze over gaan. Hier alleen gebreken en wat nergens anders past.", f:[
+  F("p_gebrek","Foto: opvallende gebreken","foto",{opt:1}),
+  F("p_overig","Foto: overig","foto",{opt:1})
+ ]},
+ {id:"con", t:"Conclusie en classificatie", role:"PM", hint:"A = unit compleet naar depot · B = alleen bruikbare hoofdcomponenten mee · C = alleen waardevolle onderdelen mee · D = verkoper voert af.", f:[
+  {sub:"Knock-outcriteria"},
+  F("ko1","Opslag: herkeuring op korte termijn of onbekend","ko",{opt:1}),
+  F("ko2","PED- / constructiedossier ontbreekt","ko",{opt:1}),
+  F("ko3","Compressortype buiten OG-park","ko",{opt:1}),
+  F("ko4","Behuizing niet hijsbaar of transporteerbaar","ko",{opt:1}),
+  F("ko5","Ernstige gebreken uit functietest of inspectie","ko",{opt:1}),
+  {sub:"Oordeel per component"},
+  F("k_cmp","Compressor","seg",{o:COMP,tone:T_COMP,w:1}),
+  F("k_ops","Opslag","seg",{o:COMP,tone:T_COMP,w:1}),
+  F("k_drg","Droger","seg",{o:COMP,tone:T_COMP,w:1}),
+  F("k_dsp","Dispensers","seg",{o:COMP,tone:T_COMP,w:1}),
+  F("k_ctl","Besturing en elektra","seg",{o:COMP,tone:T_COMP,w:1}),
+  F("k_beh","Behuizing","seg",{o:COMP,tone:T_COMP,w:1}),
+  {sub:"Eindoordeel installatie"},
+  F("k_tot","Classificatie","seg",{o:TOT,tone:T_TOT,w:1}),
+  F("toel","Onderbouwing","area",{w:1}),
+  F("open","Openstaande punten / nader uitzoeken","area",{opt:1,w:1})
+ ]}
+];
+
+const COMPCOLS = [["k_cmp","Compressor"],["k_ops","Opslag"],["k_drg","Droger"],["k_dsp","Dispensers"],["k_ctl","Besturing"],["k_beh","Behuizing"]];
+
+/* ---------- State ---------- */
+let state = {v:1, ui:{tab:"ov", role:"Alle"}, inst:Array.from({length:N},()=>({}))};
+try{
+  const raw = localStorage.getItem(KEY);
+  if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.inst)){ state = p; while(state.inst.length<N) state.inst.push({}); state.ui = state.ui||{tab:"ov",role:"Alle"}; } }
+}catch(e){}
+
+const LOC = [
+  ["Kortrijk","Brugsesteenweg 228, 8500 Kortrijk"],
+  ["Jambes","Av. de Luxembourg 1, 5100 Namur"],
+  ["Herent/Winkelse","Brusselsesteenweg 23, 3020 Herent"],
+  ["Hasselt","Kempische Steenweg 465, 3500 Hasselt"],
+  ["Maasmechelen","Rijksweg 526, 3630 Maasmechelen"]
+];
+state.ph = state.ph || {};
+function seedLoc(){
+  LOC.forEach(([n,a],i)=>{
+    if(!state.inst[i]["alg.locatie"]) state.inst[i]["alg.locatie"]=n;
+    if(!state.inst[i]["alg.adres"]) state.inst[i]["alg.adres"]=a;
+  });
+}
+seedLoc();
+
+let saveT = null;
+function flush(){ if(saveT){ clearTimeout(saveT); saveT=null; writeNow(); } }
+function writeNow(){
+    const el = document.getElementById("save");
+    try{
+      localStorage.setItem(KEY, JSON.stringify(state));
+      el.textContent = "Opgeslagen " + new Date().toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"});
+    }catch(e){ el.textContent = "Opslaan in browser niet mogelijk — maak back-ups (JSON)"; }
+}
+window.addEventListener("pagehide", flush);
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") flush(); });
+function save(){
+  clearTimeout(saveT);
+  saveT = setTimeout(()=>{ saveT=null; writeNow(); },250);
+}
+/* ---------- Helpers ---------- */
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fields = sec => sec.f.filter(x=>x.k);
+const allKeys = () => S.flatMap(s=>fields(s).map(f=>({s,f,key:s.id+"."+f.k})));
+const filled = v => v!==undefined && v!==null && v!=="" && v!==false;
+function secProg(i,s){
+  const fs = fields(s).filter(f=>!f.opt);
+  const n = fs.filter(f=>isF(i,s,f)).length;
+  return [n,fs.length];
+}
+function isF(i,s,f){ const key=s.id+"."+f.k; return f.t==="foto" ? phList(i,key).length>0 : filled(state.inst[i][key]); }
+function instProg(i){
+  let n=0,t=0; S.forEach(s=>{const [a,b]=secProg(i,s); n+=a; t+=b;});
+  return t?Math.round(100*n/t):0;
+}
+function instName(i){ const l = state.inst[i]["alg.locatie"]; return l ? l : "Installatie "+(i+1); }
+function toneOf(f,v){ return (f.tone&&f.tone[v])||""; }
+function chip(v,tone){
+  if(!filled(v)) return '<span class="chip">—</span>';
+  const c = tone==="w"?"w":tone==="b"?"b":"g";
+  return '<span class="chip '+c+'">'+esc(v)+'</span>';
+}
+const findField = (sid,k) => S.find(s=>s.id===sid).f.find(f=>f.k===k);
+
+/* ---------- Foto's ---------- */
+const CAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+const thumbURL = {};
+let db = null;
+function idb(){
+  return new Promise((res,rej)=>{
+    if(db) return res(db);
+    if(!window.indexedDB) return rej(new Error("Fotoopslag niet beschikbaar in deze browser"));
+    const r = indexedDB.open("og-cng-be-fotos",1);
+    r.onupgradeneeded = ()=>r.result.createObjectStore("p",{keyPath:"id"});
+    r.onsuccess = ()=>{ db=r.result; res(db); };
+    r.onerror = ()=>rej(r.error);
+  });
+}
+function tx(mode, fn){
+  return idb().then(d=>new Promise((res,rej)=>{
+    const x = d.transaction("p",mode), rq = fn(x.objectStore("p"));
+    x.oncomplete = ()=>res(rq ? rq.result : undefined);
+    x.onerror = ()=>rej(x.error); x.onabort = ()=>rej(x.error || new Error("Opslag vol?"));
+  }));
+}
+const idbPut = rec => tx("readwrite", st=>st.put(rec));
+const idbGet = id  => tx("readonly",  st=>st.get(id));
+const idbDel = id  => tx("readwrite", st=>st.delete(id));
+const idbAll = ()  => tx("readonly",  st=>st.getAll());
+
+function phList(i,slot){ return Object.entries(state.ph).filter(([,m])=>m.i===i && m.s===slot).sort((a,b)=>a[1].ts-b[1].ts); }
+function phCount(i){ return Object.values(state.ph).filter(m=>m.i===i).length; }
+function thumbsHTML(i,slot){
+  return phList(i,slot).map(([id,m])=>'<button type="button" class="th" data-ph="'+id+'" title="'+esc(m.cap||"")+'"><img src="'+(thumbURL[id]||"")+'" alt="'+esc(m.cap||"Foto")+'"></button>').join("");
+}
+function refreshSlot(i,slot){ const el=document.querySelector('[data-phs="'+i+'|'+slot+'"]'); if(el) el.innerHTML=thumbsHTML(i,slot); }
+function loadImg(blob){
+  return new Promise((res,rej)=>{
+    const u = URL.createObjectURL(blob), im = new Image();
+    im.onload = ()=>{ im._u=u; res(im); };
+    im.onerror = ()=>{ URL.revokeObjectURL(u); rej(new Error("Afbeelding kan niet worden gelezen (formaat?)")); };
+    im.src = u;
+  });
+}
+function toJpeg(im,max,q){
+  const r = Math.min(1, max/Math.max(im.naturalWidth, im.naturalHeight));
+  const c = document.createElement("canvas");
+  c.width = Math.round(im.naturalWidth*r); c.height = Math.round(im.naturalHeight*r);
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  return new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error("Comprimeren mislukt")),"image/jpeg",q));
+}
+const newId = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+async function addPhotos(i,slot,files,lbl){
+  if(lbl) lbl.classList.add("busy");
+  let ok=0;
+  try{
+    for(const f of files){
+      const im = await loadImg(f);
+      const full = await toJpeg(im,1920,.8), thumb = await toJpeg(im,320,.7);
+      URL.revokeObjectURL(im._u);
+      const id = newId();
+      await idbPut({id, full, thumb});
+      state.ph[id] = {i, s:slot, ts:Date.now(), cap:""};
+      thumbURL[id] = URL.createObjectURL(thumb); ok++;
+    }
+    if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+  }catch(err){ alert("Foto opslaan mislukt: "+(err && err.message || err)); }
+  finally{
+    if(lbl) lbl.classList.remove("busy");
+    if(ok){ save(); refreshSlot(i,slot); updateLive(i); }
+  }
+}
+function delPhotos(pred){
+  Object.keys(state.ph).filter(pred).forEach(id=>{
+    idbDel(id).catch(()=>{});
+    if(thumbURL[id]) URL.revokeObjectURL(thumbURL[id]);
+    delete thumbURL[id]; delete state.ph[id];
+  });
+}
+async function loadPhotos(){
+  try{
+    const recs = await idbAll(), have = {};
+    recs.forEach(r=>{
+      if(state.ph[r.id]){ have[r.id]=1; thumbURL[r.id]=URL.createObjectURL(r.thumb); }
+      else idbDel(r.id).catch(()=>{});
+    });
+    Object.keys(state.ph).forEach(id=>{ if(!have[id]) delete state.ph[id]; });
+    document.querySelectorAll("[data-phs]").forEach(el=>{ const [i,s]=el.dataset.phs.split("|"); el.innerHTML=thumbsHTML(+i,s); });
+    for(let i=0;i<N;i++) updateLive(i);
+  }catch(e){ console.warn(e); }
+}
+document.addEventListener("change", e=>{
+  const t = e.target; if(!t.dataset || !t.dataset.phin || !t.files.length) return;
+  const [i,slot] = t.dataset.phin.split("|");
+  const files = [...t.files]; t.value="";
+  addPhotos(+i, slot, files, t.closest(".phadd"));
+});
+
+/* Viewer */
+let vwId=null, vwURL=null;
+const vw = document.getElementById("vw");
+async function openViewer(id){
+  const m = state.ph[id]; if(!m) return;
+  vwId = id;
+  document.getElementById("vwcap").value = m.cap||"";
+  document.getElementById("vwimg").src = thumbURL[id]||"";
+  vw.hidden = false;
+  try{ const r = await idbGet(id); if(r && vwId===id){ vwURL = URL.createObjectURL(r.full); document.getElementById("vwimg").src = vwURL; } }catch(e){}
+}
+function closeViewer(){ flush(); vw.hidden = true; if(vwURL) URL.revokeObjectURL(vwURL); vwURL=null; vwId=null; }
+document.getElementById("vwclose").onclick = closeViewer;
+vw.addEventListener("click", e=>{ if(e.target===vw) closeViewer(); });
+document.getElementById("vwcap").addEventListener("input", e=>{
+  if(vwId && state.ph[vwId]){ state.ph[vwId].cap = e.target.value; save(); }
+});
+document.getElementById("vwdel").onclick = ()=>{
+  if(!vwId || !confirm("Deze foto verwijderen?")) return;
+  const m = state.ph[vwId], id = vwId;
+  closeViewer(); delPhotos(x=>x===id); save(); refreshSlot(m.i,m.s); updateLive(m.i);
+};
+
+/* ZIP (store, geen compressie — JPEG is al gecomprimeerd) */
+const CRCT = (()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320^(c>>>1) : c>>>1; t[n]=c>>>0; } return t; })();
+function crc32(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c = CRCT[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function makeZip(entries){
+  const enc = new TextEncoder(), parts=[], cen=[]; let off=0;
+  const d = new Date(), dt=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate(), tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1);
+  for(const e of entries){
+    const nm = enc.encode(e.name), crc = crc32(e.data), sz = e.data.length;
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true); h.setUint16(4,20,true); h.setUint16(6,0x0800,true); h.setUint16(8,0,true);
+    h.setUint16(10,tm,true); h.setUint16(12,dt,true); h.setUint32(14,crc,true); h.setUint32(18,sz,true); h.setUint32(22,sz,true);
+    h.setUint16(26,nm.length,true); h.setUint16(28,0,true);
+    parts.push(h.buffer, nm, e.data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0,0x02014b50,true); c.setUint16(4,20,true); c.setUint16(6,20,true); c.setUint16(8,0x0800,true); c.setUint16(10,0,true);
+    c.setUint16(12,tm,true); c.setUint16(14,dt,true); c.setUint32(16,crc,true); c.setUint32(20,sz,true); c.setUint32(24,sz,true);
+    c.setUint16(28,nm.length,true); c.setUint32(42,off,true);
+    cen.push(c.buffer, nm);
+    off += 30+nm.length+sz;
+  }
+  const cs = cen.reduce((a,b)=>a+b.byteLength,0), end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0,0x06054b50,true); end.setUint16(8,entries.length,true); end.setUint16(10,entries.length,true);
+  end.setUint32(12,cs,true); end.setUint32(16,off,true);
+  return new Blob([...parts, ...cen, end.buffer], {type:"application/zip"});
+}
+function readZip(buf){
+  const dv = new DataView(buf), dec = new TextDecoder(), out = {}; let p=0;
+  while(p+30<=buf.byteLength && dv.getUint32(p,true)===0x04034b50){
+    const method=dv.getUint16(p+8,true), flags=dv.getUint16(p+6,true), sz=dv.getUint32(p+18,true), nl=dv.getUint16(p+26,true), xl=dv.getUint16(p+28,true);
+    if(method!==0 || (flags&8)) throw new Error("Deze ZIP is niet door de tool gemaakt (of opnieuw ingepakt). Gebruik de originele ZIP.");
+    const name = dec.decode(new Uint8Array(buf,p+30,nl)), st = p+30+nl+xl;
+    out[name] = new Uint8Array(buf,st,sz); p = st+sz;
+  }
+  return out;
+}
+const pad2 = n=>String(n).padStart(2,"0");
+const safe = s=>String(s).replace(/[\\\/:*?"<>|]+/g,"-").replace(/\s+/g," ").trim().slice(0,60);
+async function buildZip(scope){
+  const enc = new TextEncoder(), recs = await idbAll(), by = {}, entries = [], phOut = {};
+  recs.forEach(r=>by[r.id]=r);
+  for(const i of scope){
+    const folder = pad2(i+1)+"_"+safe(instName(i));
+    S.forEach((s,si)=>fields(s).filter(f=>f.t==="foto").forEach(f=>{
+      phList(i,s.id+"."+f.k).forEach(([id,m],n)=>{
+        if(!by[id]) return;
+        const name = folder+"/"+pad2(si+1)+"_"+safe(s.t)+"_"+safe(f.l.replace(/^Foto: /,""))+"_"+(n+1)+".jpg";
+        entries.push({name, blob:by[id].full}); phOut[id] = Object.assign({}, m, {f:name});
+      });
+    }));
+  }
+  for(const e of entries) e.data = new Uint8Array(await e.blob.arrayBuffer());
+  entries.unshift({name:"opname.csv", data:enc.encode(csvText())});
+  entries.unshift({name:"data.json", data:enc.encode(JSON.stringify({v:1, export:new Date().toISOString(), inst:state.inst, ph:phOut}))});
+  return {zip:makeZip(entries), n:entries.length-2};
+}
+
+/* ---------- Render ---------- */
+function fieldHTML(i,s,f){
+  if(f.sub) return '<div class="sub">'+esc(f.sub)+'</div>';
+  const key = s.id+"."+f.k, v = state.inst[i][key], id="i"+i+"_"+s.id+"_"+f.k;
+  const da = 'data-i="'+i+'" data-key="'+key+'"';
+  const w = f.w?" w":"";
+  switch(f.t){
+    case "text": case "date":
+      return '<label class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span><input type="'+f.t+'" id="'+id+'" '+da+' value="'+esc(v)+'" placeholder="'+esc(f.ph||"")+'"></label>';
+    case "num":{
+      const inp = '<input type="number" step="any" inputmode="decimal" id="'+id+'" '+da+' value="'+esc(v)+'">';
+      return '<label class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span>'+(f.u?'<div class="unit">'+inp+'<span>'+esc(f.u)+'</span></div>':inp)+'</label>';
+    }
+    case "area":
+      return '<label class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span><textarea id="'+id+'" '+da+'>'+esc(v)+'</textarea></label>';
+    case "seg":
+      return '<div class="fld'+w+'"><span class="lbl">'+esc(f.l)+'</span><div class="seg" '+da+'>'+
+        f.o.map(o=>'<button type="button" data-v="'+esc(o)+'" class="'+(v===o?"sel "+toneOf(f,o):"")+'">'+esc(o)+'</button>').join("")+'</div></div>';
+    case "chk": case "ko":
+      return '<label class="chk'+(f.t==="ko"?" ko":"")+w+'"><input type="checkbox" id="'+id+'" '+da+(v?" checked":"")+'><span>'+esc(f.l)+'</span></label>';
+    case "foto":
+      return '<div class="fld w"><span class="lbl">'+esc(f.l)+'</span><div class="phrow"><div class="ths" data-phs="'+i+'|'+key+'">'+thumbsHTML(i,key)+'</div>'+
+        '<div class="phbtns"><label class="btn pri phadd">'+CAM+'Foto maken<input type="file" accept="image/*" capture="environment" data-phin="'+i+'|'+key+'"></label>'+
+        '<label class="btn phadd">Uit galerij<input type="file" accept="image/*" multiple data-phin="'+i+'|'+key+'"></label></div></div></div>';
+    case "doc":
+      return '<div class="docrow"><span class="lbl">'+esc(f.l)+'</span><div class="seg" '+da+'>'+
+        DOC.map(o=>'<button type="button" data-v="'+esc(o)+'" class="'+(v===o?"sel "+(T_DOC[o]||""):"")+'">'+esc(o)+'</button>').join("")+'</div></div>';
+  }
+  return "";
+}
+
+function secHTML(i,s){
+  const rc = s.role==="Monteur"?"mon":s.role==="Beide"?"bei":"";
+  const [n,t] = secProg(i,s);
+  return '<details class="sec" data-role="'+s.role+'" data-sec="'+s.id+'"><summary><span>'+esc(s.t)+'</span><span class="role '+rc+'">'+esc(s.rl||s.role)+'</span><span class="secp'+(n===t?" full":"")+'" data-sp="'+i+'.'+s.id+'">'+n+'/'+t+'</span></summary>'+
+    '<div class="body">'+(s.hint?'<div class="hint">'+esc(s.hint)+'</div>':"")+s.f.map(f=>fieldHTML(i,s,f)).join("")+'</div></details>';
+}
+
+function render(){
+  const main = document.getElementById("main");
+  let h = '<section class="panel" id="p_ov"></section>';
+  for(let i=0;i<N;i++){
+    h += '<section class="panel" id="p_'+i+'"><h2 class="ptitle" data-pt="'+i+'"></h2>'+S.map(s=>secHTML(i,s)).join("")+
+      '<div class="pfoot"><button class="btn ghost" data-clear="'+i+'">Deze installatie wissen</button></div></section>';
+  }
+  main.innerHTML = h;
+  renderTabs(); renderOverview(); applyRole(); showTab(state.ui.tab==null ? "ov" : state.ui.tab);
+}
+
+function renderTabs(){
+  let h = '<button class="tab" data-tab="ov">Overzicht</button>';
+  for(let i=0;i<N;i++) h += '<button class="tab" data-tab="'+i+'">'+(i+1)+'. '+esc(state.inst[i]["alg.locatie"]||"Installatie")+'<span class="pct">'+instProg(i)+'%</span></button>';
+  document.getElementById("tabs").innerHTML = h;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===String(state.ui.tab)));
+  document.querySelectorAll("[data-pt]").forEach(e=>{ e.textContent = (+e.dataset.pt+1)+". "+instName(+e.dataset.pt); });
+}
+
+function renderOverview(){
+  const totF = findField("con","k_tot");
+  let rows = "";
+  const cnt = {}; TOT.forEach(t=>cnt[t]=0);
+  for(let i=0;i<N;i++){
+    const d = state.inst[i], p = instProg(i);
+    const ko = ["ko1","ko2","ko3","ko4","ko5"].filter(k=>d["con."+k]).length;
+    if(d["con.k_tot"]) cnt[d["con.k_tot"]]++;
+    rows += '<tr><td class="l" data-go="'+i+'">'+(i+1)+'. '+esc(instName(i))+'</td><td>'+esc(d["alg.datum"]||"—")+'</td>'+
+      '<td><div class="prog"><i style="width:'+p+'%"></i></div><span class="note">'+p+'%</span></td>'+
+      COMPCOLS.map(([k])=>'<td>'+chip(d["con."+k], T_COMP[d["con."+k]])+'</td>').join("")+
+      '<td><span class="chip'+(phCount(i)?" g":"")+'">'+phCount(i)+'</span></td>'+
+      '<td>'+(ko?'<span class="chip b">'+ko+'</span>':'<span class="chip">0</span>')+'</td>'+
+      '<td>'+chip(d["con.k_tot"]?d["con.k_tot"].slice(0,1):"", toneOf(totF,d["con.k_tot"]))+'</td></tr>';
+  }
+  const p = document.getElementById("p_ov");
+  p.innerHTML =
+    '<div class="card"><h2>Overzicht 5 installaties</h2><div class="tw"><table><thead><tr><th>Installatie</th><th>Datum</th><th>Voortgang</th>'+
+    COMPCOLS.map(([,l])=>'<th>'+l+'</th>').join("")+'<th>Foto\'s</th><th>KO</th><th>Oordeel</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="counts">'+TOT.map(t=>'<div><strong>'+cnt[t]+'</strong>'+esc(t)+'</div>').join("")+'</div></div>'+
+    '<div class="card"><h2>Classificatie</h2><div class="legend">'+
+    '<div><b>A – Compleet herplaatsbaar</b><br>Unit incl. betonbehuizing als geheel naar het depot.</div>'+
+    '<div><b>B – Deels herbruikbaar</b><br>Alleen bruikbare hoofdcomponenten (bijv. compressor, opslag) mee.</div>'+
+    '<div><b>C – Onderdelenbron</b><br>Alleen waardevolle onderdelen mee; rest afvoeren door verkoper.</div>'+
+    '<div><b>D – Niet overnemen</b><br>Verkoper voert de complete installatie af.</div></div>'+
+    '<p class="note" style="margin:10px 0 0">Per component: <b>Herbruikbaar</b> (as-is) · <b>Na revisie</b> · <b>Onderdelen</b> · <b>Afvoeren</b>. KO = aantal aangevinkte knock-outcriteria.</p></div>'+
+    '<div class="card"><h2>Werkwijze op locatie</h2><div class="legend">'+
+    '<div><b>Projectmanager</b><br>Algemeen · Behuizing · Interfaces · Bereikbaarheid · Documentatie · Interview verkoper · Conclusie</div>'+
+    '<div><b>Monteur</b><br>Compressor · Opslag · Droger · Dispensers · Besturing en elektra · Functietest (met commissioning engineer)</div>'+
+    '<div><b>Samen</b><br>Foto\'s · Afstemmen classificatie vóór vertrek</div></div></div>';
+}
+
+function updateLive(i){
+  S.forEach(s=>{
+    const el = document.querySelector('[data-sp="'+i+'.'+s.id+'"]');
+    if(el){ const [n,t]=secProg(i,s); el.textContent=n+"/"+t; el.classList.toggle("full",n===t); }
+  });
+  renderTabs(); renderOverview();
+}
+
+function showTab(t){
+  state.ui.tab = t;
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on", p.id==="p_"+t));
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===String(t)));
+  window.scrollTo(0,0);
+}
+
+function applyRole(){
+  const r = state.ui.role||"Alle";
+  document.querySelectorAll(".role-f").forEach(b=>b.classList.toggle("on", b.dataset.r===r));
+  document.querySelectorAll("details.sec").forEach(d=>{
+    d.style.display = (r==="Alle"||d.dataset.role===r||d.dataset.role==="Beide") ? "" : "none";
+  });
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("input", e=>{
+  const t = e.target; if(!t.dataset || !t.dataset.key) return;
+  const i = +t.dataset.i;
+  const v = t.type==="checkbox" ? t.checked : t.value;
+  if(filled(v)) state.inst[i][t.dataset.key]=v; else delete state.inst[i][t.dataset.key];
+  save(); updateLive(i);
+});
+document.addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.ph){ openViewer(b.dataset.ph); return; }
+  const seg = b.parentElement && b.parentElement.classList.contains("seg") ? b.parentElement : null;
+  if(seg && b.dataset.v!==undefined){
+    const i=+seg.dataset.i, key=seg.dataset.key, [sid,k]=key.split(".");
+    const f = findField(sid,k);
+    const cur = state.inst[i][key];
+    if(cur===b.dataset.v) delete state.inst[i][key]; else state.inst[i][key]=b.dataset.v;
+    seg.querySelectorAll("button").forEach(x=>{
+      const on = state.inst[i][key]===x.dataset.v;
+      x.className = on ? "sel "+(f.t==="doc"?(T_DOC[x.dataset.v]||""):toneOf(f,x.dataset.v)) : "";
+    });
+    save(); updateLive(i); return;
+  }
+  if(b.dataset.tab!==undefined){ showTab(b.dataset.tab==="ov"?"ov":+b.dataset.tab); save(); return; }
+  if(b.classList.contains("role-f")){ state.ui.role=b.dataset.r; applyRole(); save(); return; }
+  if(b.dataset.clear!==undefined){
+    const i=+b.dataset.clear;
+    if(confirm("Alle gegevens en foto's van "+instName(i)+" wissen?")){ state.inst[i]={}; delPhotos(id=>state.ph[id].i===i); seedLoc(); save(); render(); }
+    return;
+  }
+});
+document.addEventListener("click", e=>{
+  const td = e.target.closest("[data-go]"); if(td){ showTab(+td.dataset.go); save(); }
+});
+document.getElementById("openall").onclick = ()=>document.querySelectorAll(".panel.on details.sec").forEach(d=>d.open=true);
+document.getElementById("closeall").onclick = ()=>document.querySelectorAll(".panel.on details.sec").forEach(d=>d.open=false);
+document.getElementById("wipe").onclick = ()=>{
+  if(confirm("ALLE gegevens én foto's van alle 5 installaties wissen? Maak eerst een ZIP-export.")){ state.inst=Array.from({length:N},()=>({})); delPhotos(()=>true); seedLoc(); save(); render(); }
+};
+
+/* ---------- Export / import ---------- */
+function stamp(){ const d=new Date(),p=n=>String(n).padStart(2,"0"); return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+p(d.getHours())+p(d.getMinutes()); }
+function download(name, text, type){
+  const blob = new Blob([text],{type});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);
+}
+function jsonText(){ return JSON.stringify({v:1, export:new Date().toISOString(), inst:state.inst},null,1); }
+function csvText(){
+  const q = s => '"'+String(s==null?"":s).replace(/"/g,'""')+'"';
+  const lines = [["Nr","Installatie","Blok","Rol","Veld","Waarde"].map(q).join(";")];
+  for(let i=0;i<N;i++){
+    S.forEach(s=>fields(s).forEach(f=>{
+      let v = state.inst[i][s.id+"."+f.k];
+      if(f.t==="chk"||f.t==="ko") v = v ? "Ja" : "";
+      if(f.t==="foto"){ const n=phList(i,s.id+"."+f.k).length; v = n ? n+" foto('s)" : ""; }
+      lines.push([i+1, instName(i), s.t, s.rl||s.role, f.l, v].map(q).join(";"));
+    }));
+  }
+  return "\ufeff"+lines.join("\r\n");
+}
+document.getElementById("expjson").onclick = ()=>download("CNG-BE-opname-"+stamp()+".json", jsonText(), "application/json");
+document.getElementById("expcsv").onclick = ()=>download("CNG-BE-opname-"+stamp()+".csv", csvText(), "text/csv;charset=utf-8");
+document.getElementById("share").onclick = async ()=>{
+  const s = stamp();
+  const files = [
+    new File([jsonText()], "CNG-BE-opname-"+s+".json", {type:"application/json"}),
+    new File([csvText()], "CNG-BE-opname-"+s+".csv", {type:"text/csv"})
+  ];
+  if(navigator.canShare && navigator.canShare({files})){
+    try{
+      await navigator.share({files, title:"Opname CNG België "+s, text:"Opname CNG-installaties België. JSON = volledige back-up (importeren in de tool), CSV = openen in Excel."});
+      return;
+    }catch(e){ if(e && e.name==="AbortError") return; }
+  }
+  files.forEach(f=>download(f.name, f, f.type));
+  alert("Delen wordt op dit apparaat niet ondersteund. De bestanden zijn gedownload; voeg ze handmatig als bijlage toe.");
+};
+document.getElementById("impjson").onclick = ()=>document.getElementById("file").click();
+function mergeInst(p){
+  let added=0, conflicts=[];
+  for(let i=0;i<N && i<p.inst.length;i++){
+    const src = p.inst[i]||{};
+    Object.keys(src).forEach(k=>{
+      const v = src[k]; if(!filled(v)) return;
+      const cur = state.inst[i][k];
+      if(!filled(cur)){ state.inst[i][k]=v; added++; }
+      else if(String(cur)!==String(v)) conflicts.push((i+1)+". "+instName(i)+" – "+k);
+    });
+  }
+  return {added, conflicts};
+}
+function importReport(r, extra){
+  alert(r.added+" velden aangevuld."+(extra||"")+(r.conflicts.length?"\n\n"+r.conflicts.length+" velden verschillen en zijn NIET overschreven:\n"+r.conflicts.slice(0,15).join("\n")+(r.conflicts.length>15?"\n…":""):""));
+}
+document.getElementById("file").onchange = async e=>{
+  const file = e.target.files[0]; e.target.value=""; if(!file) return;
+  try{
+    if(/\.zip$/i.test(file.name) || file.type==="application/zip"){
+      const z = readZip(await file.arrayBuffer());
+      if(!z["data.json"]) throw new Error("Geen data.json in ZIP.");
+      const p = JSON.parse(new TextDecoder().decode(z["data.json"]));
+      const r = mergeInst(p);
+      let nph=0, skip=0;
+      for(const [id,m] of Object.entries(p.ph||{})){
+        if(state.ph[id]){ skip++; continue; }
+        const bytes = z[m.f]; if(!bytes) continue;
+        const full = new Blob([bytes],{type:"image/jpeg"});
+        const im = await loadImg(full); const thumb = await toJpeg(im,320,.7); URL.revokeObjectURL(im._u);
+        await idbPut({id, full, thumb});
+        state.ph[id] = {i:m.i, s:m.s, ts:m.ts, cap:m.cap||""};
+        thumbURL[id] = URL.createObjectURL(thumb); nph++;
+      }
+      save(); render(); importReport(r, "\n"+nph+" foto's toegevoegd"+(skip?" ("+skip+" al aanwezig)":"")+".");
+    } else {
+      const p = JSON.parse(await file.text());
+      if(!p || !Array.isArray(p.inst)) throw new Error("Geen geldig back-upbestand.");
+      const r = mergeInst(p); save(); render(); importReport(r);
+    }
+  }catch(err){ alert("Importeren mislukt: "+(err && err.message || err)); }
+};
+
+let dlFile = null;
+const dlm = document.getElementById("dlm");
+document.getElementById("expzip").onclick = async ()=>{
+  const one = state.ui.tab!=="ov";
+  const scope = one ? [+state.ui.tab] : Array.from({length:N},(_,i)=>i);
+  const btn = document.getElementById("expzip"); btn.disabled = true; btn.textContent = "ZIP maken…";
+  try{
+    const {zip, n} = await buildZip(scope);
+    const nm = "CNG-BE-"+(one ? pad2(scope[0]+1)+"-"+safe(instName(scope[0])).replace(/[ \/]/g,"_") : "alle")+"-"+stamp()+".zip";
+    dlFile = new File([zip], nm, {type:"application/zip"});
+    const mb = zip.size/1048576;
+    document.getElementById("dltxt").innerHTML = '<h3>ZIP klaar</h3>'+esc(one ? instName(scope[0]) : "Alle 5 installaties")+' · '+n+' foto\'s · '+mb.toFixed(1).replace(".",",")+' MB'+
+      '<p class="note">Bevat per station een map met foto\'s, plus data.json (volledige back-up, importeren op de Mac) en opname.csv (Excel).'+
+      (mb>20 ? ' <b>Groter dan ~20 MB: gebruik AirDrop, of Mail Drop / OneDrive in plaats van een gewone bijlage.</b>' : '')+'</p>';
+    dlm.hidden = false;
+  }catch(err){ alert("ZIP maken mislukt: "+(err && err.message || err)); }
+  finally{ btn.disabled = false; btn.textContent = "Foto's + data (ZIP)"; }
+};
+document.getElementById("dlshare").onclick = async ()=>{
+  if(!dlFile) return;
+  if(navigator.canShare && navigator.canShare({files:[dlFile]})){
+    try{ await navigator.share({files:[dlFile], title:dlFile.name}); dlm.hidden=true; return; }
+    catch(e){ if(e && e.name==="AbortError") return; }
+  }
+  alert("Delen wordt hier niet ondersteund — kies Downloaden.");
+};
+document.getElementById("dlsave").onclick = ()=>{ if(dlFile){ download(dlFile.name, dlFile, dlFile.type); dlm.hidden=true; } };
+document.getElementById("dlclose").onclick = ()=>{ dlm.hidden=true; };
+
+/* ---------- Print ---------- */
+let openState = [];
+document.getElementById("print").onclick = ()=>{
+  const all = confirm("Alle installaties afdrukken?\n\nOK = alle installaties + overzicht\nAnnuleren = alleen huidig tabblad");
+  document.body.classList.toggle("printall", all);
+  openState = [...document.querySelectorAll("details.sec")].map(d=>d.open);
+  document.querySelectorAll("details.sec").forEach(d=>d.open=true);
+  window.print();
+};
+window.addEventListener("afterprint", ()=>{
+  document.body.classList.remove("printall");
+  document.querySelectorAll("details.sec").forEach((d,j)=>d.open=!!openState[j]);
+});
+
+render();
+loadPhotos();
+if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost")){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+})();
+</script>
+</body>
+</html>
